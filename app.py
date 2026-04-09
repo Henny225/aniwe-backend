@@ -5,14 +5,16 @@ import mysql.connector
 app = Flask(__name__)
 
 DB_CONFIG = {
-    "host": "34.11.203.137",
+    "host": "35.233.192.65",
     "user": "aniwe_admin",
     "password": "Aniwe2024!",
     "database": "AniweDB"
 }
 
 def get_db():
-    return mysql.connector.connect(**DB_CONFIG)
+    config = DB_CONFIG.copy()
+    config["connection_timeout"] = 10
+    return mysql.connector.connect(**config)
 
 HOME_PAGE = """
 <!DOCTYPE html>
