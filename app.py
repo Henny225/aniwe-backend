@@ -64,18 +64,18 @@ def create_app():
         menu_links = []
         if user_role == 'CONSUMER':
             menu_links = [
-                {'name': 'Products', 'url': '#'},
+                {'name': 'Products', 'url': '/products'},
                 {'name': 'My Wardrobe', 'url': '#'},
                 {'name': 'My Orders', 'url': '#'}
             ]
         elif user_role == 'RETAIL_PARTNER':
             menu_links = [
-                {'name': 'My Products', 'url': '#'},
+                {'name': 'My Products', 'url': '/products'},
                 {'name': 'My Orders', 'url': '#'}
             ]
         elif user_role == 'ADMINISTRATOR':
             menu_links = [
-                {'name': 'All Products', 'url': '#'},
+                {'name': 'All Products', 'url': '/products'},
                 {'name': 'All Orders', 'url': '#'},
                 {'name': 'All Users', 'url': '#'}
             ]
