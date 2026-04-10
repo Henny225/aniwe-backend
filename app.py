@@ -4,6 +4,7 @@ import sys
 from config import Config
 from database import get_connection
 from auth_routes import auth_bp, register_web_auth_routes
+from catalog.routes import catalog
 from utils import normalize_account_type
 
 
@@ -16,6 +17,7 @@ def create_app():
     # Register auth routes from module
     app.register_blueprint(auth_bp)
     register_web_auth_routes(app)
+    app.register_blueprint(catalog)
     
     # Decorator to check if user is logged in
     def login_required(f):
