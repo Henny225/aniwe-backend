@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Inventory Management{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Create Account</h2>
+    
+    {% if error %}
+    <div class="error-message">{{ error }}</div>
+    {% endif %}
+    
+    <form method="POST">
+        <div class="form-group">
+            <label for="first_name">First Name</label>
+            <input type="text" id="first_name" name="first_name" required placeholder="John">
+        </div>
+        
+        <div class="form-group">
+            <label for="last_name">Last Name</label>
+            <input type="text" id="last_name" name="last_name" required placeholder="Doe">
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required placeholder="your@email.com">
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Create a strong password">
+        </div>
+        
+        <div class="form-group">
+            <label for="role">Account Type</label>
+            <select id="role" name="role" required>
+                <option value="">Select your account type</option>
+                <option value="CONSUMER">Consumer</option>
+                <option value="RETAIL_PARTNER">Retail Partner</option>
+                <option value="ADMINISTRATOR">Administrator</option>
+            </select>
+        </div>
+        
+        <button type="submit">Create Account</button>
+    </form>
+    
+    <div class="form-footer">
+        Already have an account? <a href="{{ url_for('login') }}">Sign in here</a>
+    </div>
+</div>
+{% endblock %}
