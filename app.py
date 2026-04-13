@@ -1,8 +1,14 @@
 import os
 from flask import Flask, render_template_string, jsonify, request
 import mysql.connector
+from orders.routes import orders_bp
+
 
 app = Flask(__name__)
+
+app.secret_key = 'aniwe-secret-2024'
+app.register_blueprint(orders_bp)
+
 
 DB_CONFIG = {
     "host": "35.233.192.65",

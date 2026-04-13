@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>aniwe — Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Inter, sans-serif; background: linear-gradient(135deg, #f8f6f3 0%, #ede7e0 100%); color: #2c2828; min-height: 100vh; font-weight: 300; }
+        nav { text-align: center; padding: 3rem 0 1rem; }
+        nav h1 { font-family: Cormorant Garamond, serif; font-size: 2.8rem; font-weight: 300; color: #1a1817; letter-spacing: 3px; }
+        nav p { font-size: 0.75rem; color: #8b7f7a; letter-spacing: 4px; text-transform: uppercase; margin-top: 0.3rem; }
+        .divider { width: 50px; height: 1px; background: #d4c4b0; margin: 2rem auto; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px 4rem; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        h2 { font-family: Cormorant Garamond, serif; font-size: 1.5rem; font-weight: 400; color: #1a1817; letter-spacing: 1px; }
+        .btn { background: #1a1817; color: #f8f6f3; padding: 8px 20px; border-radius: 50px; text-decoration: none; font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 400; transition: all 0.3s ease; display: inline-block; }
+        .btn:hover { background: #3a3837; transform: translateY(-1px); }
+        .card { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(212,196,176,0.3); border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 8px 12px; font-size: 0.6rem; color: #8b7f7a; text-transform: uppercase; letter-spacing: 2px; font-weight: 500; border-bottom: 1px solid rgba(212,196,176,0.3); }
+        td { padding: 10px 12px; font-size: 0.85rem; color: #2c2828; border-bottom: 1px solid rgba(212,196,176,0.15); font-weight: 300; }
+        tr:last-child td { border-bottom: none; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; }
+        .badge-pending  { background: #fef3cd; color: #856404; }
+        .badge-delivered { background: #d1e7dd; color: #0a3622; }
+        .badge-shipped  { background: #cfe2ff; color: #084298; }
+        .badge-cancelled { background: #f8d7da; color: #842029; }
+        .badge-processing { background: #e2d9f3; color: #432874; }
+        .badge-returned { background: #f0f0f0; color: #555; }
+        .empty { text-align: center; padding: 3rem; color: #8b7f7a; font-style: italic; font-size: 0.9rem; }
+        .nav-links { display: flex; gap: 12px; justify-content: center; margin-bottom: 2rem; }
+        .nav-links a { font-size: 0.7rem; color: #8b7f7a; text-decoration: none; letter-spacing: 2px; text-transform: uppercase; transition: color 0.2s; }
+        .nav-links a:hover { color: #1a1817; }
+        footer { text-align: center; padding: 2rem 0 3rem; font-size: 0.7rem; color: #8b7f7a; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>aniwe</h1>
+        <p>
+            {% if role == 'Consumer' %}My Orders
+            {% elif role == 'Retailer' %}Orders for My Products
+            {% else %}All Orders{% endif %}
+        </p>
+    </nav>
+    <div class="divider"></div>
+
+    <div class="container">
+        <div class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/orders">Orders</a>
+            <a href="/profile">Profile</a>
+            {% if role == 'Consumer' %}
+            <a href="/orders/new">Place Order</a>
+            {% endif %}
+        </div>
+
+        <div class="top-bar">
+            <h2>Orders</h2>
+            {% if role == 'Consumer' %}
+            <a href="/orders/new" class="btn">+ New Order</a>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            {% if orders %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Unit Price</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        {% if role == 'Consumer' or role == 'Admin' %}
+                        <th>Total</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for o in orders %}
+                    <tr>
+                        <td>#{{ o.order_id }}</td>
+                        <td>{{ o.product_name }}</td>
+                        <td>{{ o.quantity }}</td>
+                        <td>${{ "%.2f"|format(o.unit_price) }}</td>
+                        <td>
+                            <span class="badge badge-{{ o.status }}">{{ o.status }}</span>
+                        </td>
+                        <td>{{ o.order_date }}</td>
+                        {% if role == 'Consumer' or role == 'Admin' %}
+                        <td>${{ "%.2f"|format(o.total_amount) }}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty">No orders found.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>aniwe &mdash; AI-Powered Fashion Stylist</footer>
+</body>
+</html>
