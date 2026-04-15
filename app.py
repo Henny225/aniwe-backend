@@ -97,3 +97,7 @@ if __name__ == '__main__':
     Config.load_profile(profile)
     app = create_app()
     app.run(debug=Config.DEBUG, host=Config.HOST, port=Config.PORT)
+
+
+#run python app.py, it uses the dev profile
+#run python app.py -gcp, it uses the gcp profile
