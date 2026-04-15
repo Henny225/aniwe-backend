@@ -45,3 +45,17 @@ INSERT INTO CONSUMER_STYLE_PREFERENCES (consumer_ID, preference) VALUES
 (4, 'Monochrome'),
 (5, 'Androgynous'),
 (5, 'Oversized Fit');
+
+
+UPDATE USER SET password_hash = SHA2('hash123', 256) WHERE user_id = 1;
+UPDATE USER SET password_hash = SHA2('hash456', 256) WHERE user_id = 2;
+UPDATE USER SET password_hash = SHA2('hash789', 256) WHERE user_id = 3;
+UPDATE USER SET password_hash = SHA2('hash101', 256) WHERE user_id = 4;
+UPDATE USER SET password_hash = SHA2('hash202', 256) WHERE user_id = 5;
+UPDATE USER SET password_hash = SHA2('retail77', 256) WHERE user_id = 6;
+UPDATE USER SET password_hash = SHA2('retail88', 256) WHERE user_id = 7;
+UPDATE USER SET password_hash = SHA2('retail99', 256) WHERE user_id = 8;
+UPDATE USER SET password_hash = SHA2('adm001', 256) WHERE user_id = 9;
+UPDATE USER SET password_hash = SHA2('adm002', 256) WHERE user_id = 10;
+
+COMMIT;
