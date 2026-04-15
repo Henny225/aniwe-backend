@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Create Outfit{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Create Outfit</h2>
+
+    {% if error %}
+    <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="outfit_name">Outfit Name</label>
+            <input type="text" id="outfit_name" name="outfit_name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="occasion">Occasion</label>
+            <input type="text" id="occasion" name="occasion" required>
+        </div>
+
+        <div class="form-group">
+            <label for="season">Season</label>
+            <input type="text" id="season" name="season" required>
+        </div>
+
+        <div class="form-group">
+            <label>Select Clothing Items</label>
+            {% for item in clothing_items %}
+                <div style="margin-bottom: 0.5rem;">
+                    <input type="checkbox" name="item_ids" value="{{ item.item_ID }}">
+                    {{ item.item_name }}{% if item.brand %} — {{ item.brand }}{% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <button type="submit">Create Outfit</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+
+{% block title %}My Wardrobe{% endblock %}
+
+{% block content %}
+<h2>My Wardrobe</h2>
+
+<div style="margin-bottom: 1.5rem;">
+    <a href="/wardrobe/add"
+   style="
+       display: inline-block;
+       padding: 10px 18px;
+       background: #b38e7c;
+       color: #f8f6f3;
+       text-decoration: none;
+       border-radius: 50px;
+       font-size: 0.75rem;
+       text-transform: uppercase;
+       letter-spacing: 1.5px;
+   ">
+   Add Clothing Item
+</a>
+</div>
+
+{% if items %}
+    <ul>
+    {% for item in items %}
+        <li>
+            {{ item.item_name }} | {{ item.brand }} | {{ item.size }} |
+            {{ item.colours or '—' }} | {{ item.category }} | {{ item.status }} |
+            ${{ "%.2f"|format(item.purchase_price or 0) }}
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No items found.</p>
+{% endif %}
+{% endblock %}

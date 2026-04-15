@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}My Outfits{% endblock %}
+
+{% block content %}
+<h2>My Outfits</h2>
+
+<div style="margin-bottom: 1.5rem;">
+    <a href="/outfits/create"
+   style="
+       display: inline-block;
+       padding: 10px 18px;
+       background: #b38e7c;
+       color: #f8f6f3;
+       text-decoration: none;
+       border-radius: 50px;
+       font-size: 0.75rem;
+       text-transform: uppercase;
+       letter-spacing: 1.5px;
+   ">
+   Create Outfit
+</a>
+</div>
+
+{% if outfits %}
+    {% for outfit in outfits %}
+        <div style="margin-bottom: 1.5rem;">
+            <strong>{{ outfit.outfit_name }}</strong><br>
+            Occasion: {{ outfit.occasions or '—' }}<br>
+            Season: {{ outfit.seasons or '—' }}<br>
+            Times worn: {{ outfit.times_worn }}<br>
+            Items:
+            <ul>
+                {% for item in outfit['items'] %}
+                    <li>{{ item.item_name }}{% if item.brand %} — {{ item.brand }}{% endif %}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No outfits found.</p>
+{% endif %}
+{% endblock %}
