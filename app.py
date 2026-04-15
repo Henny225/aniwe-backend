@@ -6,6 +6,7 @@ from database import get_connection
 from auth_routes import auth_bp, register_web_auth_routes
 from catalog.routes import catalog
 from utils import normalize_account_type
+from orders.routes import orders_bp
 from wardrobe.routes import wardrobe
 
 def create_app():
@@ -18,6 +19,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     register_web_auth_routes(app)
     app.register_blueprint(catalog)
+    app.register_blueprint(orders_bp)
     app.register_blueprint(wardrobe)
     
     # Decorator to check if user is logged in
@@ -65,21 +67,21 @@ def create_app():
         menu_links = []
         if user_role == 'CONSUMER':
             menu_links = [
-                {'name': 'Products', 'url': '#'},
-                {'name': 'My Wardrobe', 'url': '/wardrobe'},
-                {'name': 'My Orders', 'url': '#'},
-                {'name': 'My Outfits', 'url': '/outfits'}
+                {'name': 'Products', 'url': url_for('catalog.products')},
+                {'name': 'My Wardrobe', 'url': url_for('wardrobe.wardrobe_page')},
+                {'name': 'My Orders', 'url': url_for('orders.orders')},
+                {'name': 'My Outfits', 'url': url_for('wardrobe.outfits_page')}
             ]
         elif user_role == 'RETAIL_PARTNER':
             menu_links = [
-                {'name': 'My Products', 'url': '/products'},
-                {'name': 'My Orders', 'url': '#'}
+                {'name': 'My Products', 'url': url_for('catalog.products')},
+                {'name': 'My Orders', 'url': url_for('orders.orders')}
             ]
         elif user_role == 'ADMINISTRATOR':
             menu_links = [
-                {'name': 'All Products', 'url': '/products'},
-                {'name': 'All Orders', 'url': '#'},
-                {'name': 'All Users', 'url': '#'}
+                {'name': 'All Products', 'url': url_for('catalog.products')},
+                {'name': 'All Orders', 'url': url_for('orders.orders')},
+                {'name': 'All Users', 'url': url_for('orders.profile')}
             ]
         
         return render_template('index.html', first_name=first_name, role=user_role, menu_links=menu_links)
