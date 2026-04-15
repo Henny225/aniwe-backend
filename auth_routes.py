@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for, session
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for, session, current_app
 from database import execute_query, execute_query_single, execute_insert_update
 from utils import hash_password, verify_password, normalize_account_type
 from datetime import datetime
@@ -80,10 +80,16 @@ def register_web_auth_routes(app):
                     execute_insert_update('UPDATE USER SET last_login = %s WHERE user_id = %s', (datetime.now(), user['user_id']))
 
                     session['user_id'] = user['user_id']
-                    session['role'] = normalize_account_type(user['account_type'])
+                    session['role'] = user['account_type']
                     session['first_name'] = user['first_name']
                     session['last_name'] = user['last_name']
                     session['email'] = user['email']
+
+                    app.logger.info(
+                        "Web login session set: user_id=%s role=%s",
+                        session.get('user_id'),
+                        session.get('role')
+                    )
 
                     return redirect(url_for('home'))
 
@@ -178,6 +184,15 @@ def login():
     
     # Update last login
     execute_insert_update('UPDATE USER SET last_login = %s WHERE user_id = %s', (datetime.now(), user['user_id']))
+
+    session['user_id'] = user['user_id']
+    session['role'] = user['account_type']
+
+    current_app.logger.info(
+        "API login session set: user_id=%s role=%s",
+        session.get('user_id'),
+        session.get('role')
+    )
     
     return jsonify({
         'message': 'Login successful',
