@@ -6,7 +6,7 @@ from database import get_connection
 from auth_routes import auth_bp, register_web_auth_routes
 from catalog.routes import catalog
 from utils import normalize_account_type
-
+from wardrobe.routes import wardrobe
 
 def create_app():
     """Create Flask application"""
@@ -18,6 +18,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     register_web_auth_routes(app)
     app.register_blueprint(catalog)
+    app.register_blueprint(wardrobe)
     
     # Decorator to check if user is logged in
     def login_required(f):
@@ -64,9 +65,10 @@ def create_app():
         menu_links = []
         if user_role == 'CONSUMER':
             menu_links = [
-                {'name': 'Products', 'url': '/products'},
-                {'name': 'My Wardrobe', 'url': '#'},
-                {'name': 'My Orders', 'url': '#'}
+                {'name': 'Products', 'url': '#'},
+                {'name': 'My Wardrobe', 'url': '/wardrobe'},
+                {'name': 'My Orders', 'url': '#'},
+                {'name': 'My Outfits', 'url': '/outfits'}
             ]
         elif user_role == 'RETAIL_PARTNER':
             menu_links = [
@@ -99,3 +101,7 @@ if __name__ == '__main__':
     Config.load_profile(profile)
     app = create_app()
     app.run(debug=Config.DEBUG, host=Config.HOST, port=Config.PORT)
+
+
+#run python app.py, it uses the dev profile
+#run python app.py -gcp, it uses the gcp profile
