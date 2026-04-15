@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>aniwe — {{ product.name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Inter, sans-serif; background: linear-gradient(135deg, #f8f6f3 0%, #ede7e0 100%); color: #2c2828; min-height: 100vh; font-weight: 300; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 3rem; border-bottom: 1px solid rgba(212,196,176,0.3); }
+        nav h1 { font-family: Cormorant Garamond, serif; font-size: 1.8rem; font-weight: 300; letter-spacing: 2px; }
+        nav .nav-links { display: flex; gap: 20px; align-items: center; }
+        nav a { color: #2c2828; text-decoration: none; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; }
+        .user-badge { background: #1a1817; color: #f8f6f3; padding: 6px 16px; border-radius: 50px; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; }
+        .container { max-width: 800px; margin: 2rem auto; padding: 0 24px; }
+        .back-link { font-size: 0.75rem; color: #8b7f7a; text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-block; margin-bottom: 1.5rem; }
+        .back-link:hover { color: #2c2828; }
+        .flash { padding: 12px 20px; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.85rem; }
+        .flash-success { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.3); color: #2e7d32; }
+        .flash-error { background: rgba(244,67,54,0.1); border: 1px solid rgba(244,67,54,0.3); color: #c62828; }
+        .product-hero { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(212,196,176,0.3); border-radius: 12px; padding: 2.5rem; margin-bottom: 2rem; }
+        .product-hero h2 { font-family: Cormorant Garamond, serif; font-size: 2.2rem; font-weight: 400; margin-bottom: 0.3rem; }
+        .product-hero .brand { font-size: 0.7rem; color: #8b7f7a; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; }
+        .product-hero .price { font-family: Cormorant Garamond, serif; font-size: 2rem; font-weight: 500; margin-bottom: 1rem; }
+        .product-hero .description { font-size: 0.9rem; line-height: 1.7; color: #555; margin-bottom: 1rem; }
+        .meta { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag { background: rgba(212,196,176,0.2); padding: 4px 12px; border-radius: 50px; font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; color: #8b7f7a; }
+        .divider { width: 50px; height: 1px; background: #d4c4b0; margin: 2rem 0; }
+        h3 { font-family: Cormorant Garamond, serif; font-size: 1.4rem; font-weight: 400; margin-bottom: 1rem; }
+        .review-card { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(212,196,176,0.3); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+        .review-header { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+        .review-author { font-size: 0.85rem; font-weight: 500; }
+        .review-date { font-size: 0.7rem; color: #8b7f7a; }
+        .stars { color: #d4a574; font-size: 1rem; letter-spacing: 2px; }
+        .review-text { font-size: 0.85rem; line-height: 1.6; color: #555; margin-top: 0.5rem; }
+        .review-form { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(212,196,176,0.3); border-radius: 12px; padding: 2rem; margin-top: 1.5rem; }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-size: 0.65rem; color: #8b7f7a; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.5rem; }
+        select, textarea { width: 100%; padding: 12px 16px; border: 1px solid rgba(212,196,176,0.3); border-radius: 8px; font-family: Inter, sans-serif; font-size: 0.85rem; background: rgba(255,255,255,0.5); }
+        textarea { resize: vertical; min-height: 100px; }
+        select:focus, textarea:focus { outline: none; border-color: #d4c4b0; }
+        .btn { background: #1a1817; color: #f8f6f3; padding: 10px 24px; border-radius: 50px; font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase; border: none; cursor: pointer; }
+        .btn:hover { background: #3a3837; }
+        .already-reviewed { color: #8b7f7a; font-style: italic; font-size: 0.85rem; padding: 1.5rem; text-align: center; }
+        .no-reviews { color: #8b7f7a; font-style: italic; text-align: center; padding: 2rem; }
+        footer { text-align: center; padding: 3rem 0; font-size: 0.7rem; color: #8b7f7a; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>aniwe</h1>
+        <div class="nav-links">
+            <a href="/products">Products</a>
+            <a href="/">Home</a>
+            <a href="/logout">Logout</a>
+            <span class="user-badge">{{ first_name }} &middot; {{ role }}</span>
+        </div>
+    </nav>
+    <div class="container">
+        <a href="/products" class="back-link">&larr; Back to Products</a>
+        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="flash flash-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+        <div class="product-hero">
+            <h2>{{ product.name }}</h2>
+            <div class="brand">{{ product.brand_name }}</div>
+            <div class="price">${{ "%.2f"|format(product.price) }}</div>
+            {% if product.description %}<div class="description">{{ product.description }}</div>{% endif %}
+            <div class="meta">
+                <span class="tag">{{ product.category }}</span>
+                <span class="tag">{{ product.subcategory_name }}</span>
+                {% if product.tag %}<span class="tag">{{ product.tag }}</span>{% endif %}
+                {% for season in product.seasons %}<span class="tag">{{ season }}</span>{% endfor %}
+            </div>
+        </div>
+        <div class="divider"></div>
+        <h3>Reviews ({{ reviews|length }})</h3>
+        {% if reviews %}{% for review in reviews %}
+        <div class="review-card">
+            <div class="review-header">
+                <span class="review-author">{{ review.first_name }} {{ review.last_name }}</span>
+                <span class="review-date">{{ review.review_date.strftime("%b %d, %Y") if review.review_date else "" }}</span>
+            </div>
+            <div class="stars">{% for i in range(review.rating) %}&#9733;{% endfor %}{% for i in range(5 - review.rating) %}&#9734;{% endfor %}</div>
+            {% if review.review_text %}<div class="review-text">{{ review.review_text }}</div>{% endif %}
+        </div>
+        {% endfor %}{% else %}<div class="no-reviews">No reviews yet. Be the first to review!</div>{% endif %}
+        {% if role == "CONSUMER" %}
+            {% if already_reviewed %}<div class="already-reviewed">You have already reviewed this product.</div>
+            {% else %}
+            <div class="review-form">
+                <h3>Write a Review</h3>
+                <form action="/products/{{ product.product_ID }}/review" method="POST">
+                    <div class="form-group">
+                        <label>Rating</label>
+                        <select name="rating">
+                            <option value="">Select rating</option>
+                            <option value="5">&#9733;&#9733;&#9733;&#9733;&#9733; (5)</option>
+                            <option value="4">&#9733;&#9733;&#9733;&#9733;&#9734; (4)</option>
+                            <option value="3">&#9733;&#9733;&#9733;&#9734;&#9734; (3)</option>
+                            <option value="2">&#9733;&#9733;&#9734;&#9734;&#9734; (2)</option>
+                            <option value="1">&#9733;&#9734;&#9734;&#9734;&#9734; (1)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Review</label>
+                        <textarea name="review_text" placeholder="Share your thoughts..."></textarea>
+                    </div>
+                    <button type="submit" class="btn">Submit Review</button>
+                </form>
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+    <footer>aniwe &mdash; AI-Powered Fashion Stylist</footer>
+</body>
+</html>
