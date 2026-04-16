@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, request, jsonify
 import mysql.connector
+from utils import normalize_account_type
 
 orders_bp = Blueprint('orders', __name__)
 
@@ -31,9 +32,9 @@ def orders():
     cursor = db.cursor(dictionary=True)
 
     try:
-        role = session.get('role')
+        role = normalize_account_type(session.get('role'))
 
-        if role == 'Consumer':
+        if role == 'CONSUMER':
             cursor.execute("""
                 SELECT o.order_id, o.order_date, o.status, o.total_amount,
                        oi.quantity, oi.unit_price, p.name AS product_name
@@ -44,7 +45,7 @@ def orders():
                 ORDER BY o.order_date DESC
             """, (session['user_id'],))
 
-        elif role == 'Retailer':
+        elif role == 'RETAIL_PARTNER':
             cursor.execute("""
                 SELECT o.order_id, o.order_date, o.status,
                        oi.quantity, oi.unit_price, p.name AS product_name
@@ -55,7 +56,7 @@ def orders():
                 ORDER BY o.order_date DESC
             """, (session['user_id'],))
 
-        elif role == 'Admin':
+        elif role == 'ADMINISTRATOR':
             cursor.execute("""
                 SELECT o.order_id, o.order_date, o.status, o.total_amount,
                        oi.quantity, oi.unit_price, p.name AS product_name
@@ -74,7 +75,7 @@ def orders():
         cursor.close()
         db.close()
 
-    return render_template('orders/orders.html', orders=rows, role=session.get('role'))
+    return render_template('orders/orders.html', orders=rows, role=role)
 
 
 # ── Place new order ───────────────────────────────────────────
@@ -84,7 +85,7 @@ def new_order():
     if check: return check
 
     # Only consumers can place orders
-    if session.get('role') != 'Consumer':
+    if normalize_account_type(session.get('role')) != 'CONSUMER':
         return redirect('/orders')
 
     error = None
@@ -115,9 +116,9 @@ def new_order():
             db = get_db()
             cursor = db.cursor(dictionary=True)
             try:
-                # Check stock
+                # Check stock and get price
                 cursor.execute("""
-                    SELECT stock_quantity, unit_price
+                    SELECT s.stock_quantity, p.price as unit_price
                     FROM STOCKS s
                     JOIN PRODUCT p ON p.product_ID = s.product_id
                     WHERE s.product_id = %s
@@ -171,9 +172,9 @@ def profile():
     cursor = db.cursor(dictionary=True)
 
     try:
-        role = session.get('role')
+        role = normalize_account_type(session.get('role'))
 
-        if role == 'Consumer':
+        if role == 'CONSUMER':
             cursor.execute("""
                 SELECT u.first_name, u.last_name, u.email, u.phone_number,
                        c.street_address, c.city, c.postal_code, c.country
@@ -182,7 +183,7 @@ def profile():
                 WHERE u.user_id = %s
             """, (session['user_id'],))
 
-        elif role == 'Retailer':
+        elif role == 'RETAIL_PARTNER':
             cursor.execute("""
                 SELECT u.first_name, u.last_name, u.email, u.phone_number,
                        r.brand_name, r.website_url, r.store_description
@@ -191,14 +192,14 @@ def profile():
                 WHERE u.user_id = %s
             """, (session['user_id'],))
 
-        elif role == 'Admin':
+        elif role == 'ADMINISTRATOR':
             cursor.execute("""
                 SELECT user_id, first_name, last_name, email,
                        account_type, account_status
                 FROM USER
             """)
 
-        user = cursor.fetchall() if role == 'Admin' else cursor.fetchone()
+        user = cursor.fetchall() if role == 'ADMINISTRATOR' else cursor.fetchone()
 
     except Exception as e:
         print("Profile fetch error:", e)
@@ -207,9 +208,9 @@ def profile():
         db.close()
 
     if request.method == 'POST':
-        role = session.get('role')
+        role = normalize_account_type(session.get('role'))
 
-        if role == 'Consumer':
+        if role == 'CONSUMER':
             first_name = request.form.get('first_name')
             last_name = request.form.get('last_name')
             phone = request.form.get('phone_number')
@@ -243,7 +244,7 @@ def profile():
                     cursor.close()
                     db.close()
 
-        elif role == 'Retailer':
+        elif role == 'RETAIL_PARTNER':
             brand = request.form.get('brand_name')
             website = request.form.get('website_url')
             description = request.form.get('store_description')
@@ -269,5 +270,5 @@ def profile():
                     db.close()
 
     return render_template('orders/profile.html',
-                           user=user, role=session.get('role'),
+                           user=user, role=normalize_account_type(session.get('role')),
                            error=error, success=success)

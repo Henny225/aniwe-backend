@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import Blueprint, session, redirect, url_for, render_template, request
 from database import execute_query, execute_insert_update
+from utils import normalize_account_type
 
 wardrobe = Blueprint('wardrobe', __name__, template_folder='templates')
 
@@ -9,7 +10,7 @@ def consumer_required(f):
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
             return redirect(url_for('login'))
-        if session.get('role') != 'CONSUMER':
+        if normalize_account_type(session.get('role')) != 'CONSUMER':
             return redirect('/')
         return f(*args, **kwargs)
     return decorated_function
