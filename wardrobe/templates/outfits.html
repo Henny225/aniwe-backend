@@ -3,9 +3,14 @@
 {% block title %}My Outfits{% endblock %}
 
 {% block content %}
-<h2>My Outfits</h2>
+<h2 style="text-align: center; margin-bottom: 1.5rem;">My Outfits</h2>
+<div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 2rem;">
+    <a href="/" style="font-size: 0.7rem; color: #8b7f7a; text-decoration: none; letter-spacing: 2px; text-transform: uppercase;">Dashboard</a>
+    <a href="/wardrobe" style="font-size: 0.7rem; color: #8b7f7a; text-decoration: none; letter-spacing: 2px; text-transform: uppercase;">Wardrobe</a>
+    <a href="/outfits" style="font-size: 0.7rem; color: #1a1817; text-decoration: none; letter-spacing: 2px; text-transform: uppercase;">Outfits</a>
+</div>
 
-<div style="margin-bottom: 1.5rem;">
+<div style="display: flex; justify-content: center; margin-bottom: 2rem;">
     <a href="/outfits/create"
    style="
        display: inline-block;
@@ -23,21 +28,170 @@
 </div>
 
 {% if outfits %}
+<div style="
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 24px;
+">
+
     {% for outfit in outfits %}
-        <div style="margin-bottom: 1.5rem;">
-            <strong>{{ outfit.outfit_name }}</strong><br>
-            Occasion: {{ outfit.occasions or '—' }}<br>
-            Season: {{ outfit.seasons or '—' }}<br>
-            Times worn: {{ outfit.times_worn }}<br>
-            Items:
-            <ul>
-                {% for item in outfit['items'] %}
-                    <li>{{ item.item_name }}{% if item.brand %} — {{ item.brand }}{% endif %}</li>
+    <div style="
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(212,196,176,0.3);
+        border-radius: 12px;
+        padding: 1.4rem;
+        height: 315px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    ">
+
+        <div>
+            <div style="
+                font-family: 'Cormorant Garamond', serif;
+                font-size: 1.3rem;
+                color: #1a1817;
+                margin-bottom: 0.4rem;
+            ">
+                {{ outfit.outfit_name }}
+            </div>
+
+            <div style="
+                font-size: 0.78rem;
+                color: #8b7f7a;
+                line-height: 1.5;
+                margin-bottom: 1rem;
+            ">
+                Occasion: {{ outfit.occasions or '—' }}<br>
+                Season: {{ outfit.seasons or '—' }}<br>
+                Times Worn: {{ outfit.times_worn }}
+            </div>
+
+            <div style="
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            ">
+                {% for item in outfit.clothing_items[:4] %}
+                <div style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                ">
+                    <div style="
+                        width: 90px;
+                        height: 90px;
+                        background: #f1ece6;
+                        border: 1px solid rgba(212,196,176,0.3);
+                        border-radius: 8px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        overflow: hidden;
+                        margin-bottom: 0.4rem;
+                    ">
+                        {% if item.image_url %}
+                        <img src="{{ item.image_url }}"
+                             alt="{{ item.item_name }}"
+                             style="
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                             ">
+                        {% else %}
+                        <span style="
+                            font-size: 0.5rem;
+                            color: #8b7f7a;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        ">
+                            No Image
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div style="
+                        font-size: 0.66rem;
+                        color: #5f5753;
+                        line-height: 1.25;
+                    ">
+                        {{ item.item_name }}
+                    </div>
+                </div>
                 {% endfor %}
-            </ul>
+
+                {% for _ in range(4 - outfit.clothing_items|length) %}
+                <div></div>
+                {% endfor %}
+            </div>
         </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 1rem; justify-content: flex-start;">
+
+            <form method="GET"
+                  action="/outfits/edit/{{ outfit.outfit_ID }}"
+                  style="margin: 0;">
+                <button type="submit"
+                        style="
+                            width: 100px;
+                            height: 34px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: #b38e7c;
+                            color: #f8f6f3;
+                            border: none;
+                            border-radius: 50px;
+                            font-size: 0.68rem;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            cursor: pointer;
+                            padding: 0;
+                        ">
+                    Edit
+                </button>
+            </form>
+
+            <form method="POST"
+                  action="/outfits/delete/{{ outfit.outfit_ID }}"
+                  style="margin: 0;">
+                <button type="submit"
+                        style="
+                            width: 100px;
+                            height: 34px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: #8d6e63;
+                            color: #f8f6f3;
+                            border: none;
+                            border-radius: 50px;
+                            font-size: 0.68rem;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            cursor: pointer;
+                            padding: 0;
+                        ">
+                    Delete
+                </button>
+            </form>
+
+        </div>
+
+    </div>
     {% endfor %}
+</div>
+
 {% else %}
-    <p>No outfits found.</p>
+<p style="
+    text-align: center;
+    margin-top: 2rem;
+    color: #8b7f7a;
+    font-style: italic;
+">
+    No outfits found.
+</p>
 {% endif %}
 {% endblock %}

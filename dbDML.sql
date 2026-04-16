@@ -46,6 +46,21 @@ INSERT INTO CONSUMER_STYLE_PREFERENCES (consumer_ID, preference) VALUES
 (5, 'Androgynous'),
 (5, 'Oversized Fit');
 
+-- Populate the SUBCATEGORY Table
+INSERT INTO SUBCATEGORY (subcategory_ID, subcategory_name, category) VALUES
+(1, 'T-shirt', 'Tops'),
+(2, 'Blouse', 'Tops'),
+(3, 'Sweater', 'Tops'),
+(4, 'Jeans', 'Bottoms'),
+(5, 'Pants', 'Bottoms'),
+(6, 'Skirt', 'Bottoms'),
+(7, 'Jacket', 'Outerwear'),
+(8, 'Coat', 'Outerwear'),
+(9, 'Dress', 'Dresses'),
+(10, 'Sneakers', 'Shoes'),
+(11, 'Sandals', 'Shoes'),
+(12, 'Jewelry', 'Accessories'),
+(13, 'Bags', 'Accessories');
 
 UPDATE USER SET password_hash = SHA2('hash123', 256) WHERE user_id = 1;
 UPDATE USER SET password_hash = SHA2('hash456', 256) WHERE user_id = 2;

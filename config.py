@@ -12,7 +12,7 @@ class Config:
     # MySQL Configuration
     MYSQL_HOST = 'localhost'
     MYSQL_USER = 'root'
-    MYSQL_PASSWORD = 'Aniwe2024!'
+    MYSQL_PASSWORD = ''
     MYSQL_DB = 'AniweDB'
     MYSQL_PORT = 3306
 
@@ -35,7 +35,7 @@ class Config:
             'PORT': 8080,
             'MYSQL_HOST': '35.233.192.65',
             'MYSQL_USER': 'aniwe_admin',
-            'MYSQL_PASSWORD': 'Aniwe2024!',
+            'MYSQL_PASSWORD': '',
             'MYSQL_DB': 'AniweDB',
             'MYSQL_PORT': 3306,
         },
