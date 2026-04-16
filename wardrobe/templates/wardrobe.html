@@ -1,39 +1,216 @@
 {% extends "base.html" %}
 
-
 {% block title %}My Wardrobe{% endblock %}
 
 {% block content %}
-<h2>My Wardrobe</h2>
 
-<div style="margin-bottom: 1.5rem;">
+<h2 style="text-align: center; margin-bottom: 1.5rem;">My Wardrobe</h2>
+
+<div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 2rem;">
+    <a href="/" style="font-size: 0.7rem; color: #8b7f7a; text-decoration: none; letter-spacing: 2px; text-transform: uppercase;">Dashboard</a>
+    <a href="/wardrobe" style="font-size: 0.7rem; color: #1a1817; text-decoration: none; letter-spacing: 2px; text-transform: uppercase;">Wardrobe</a>
+    <a href="/outfits" style="font-size: 0.7rem; color: #8b7f7a; text-decoration: none; letter-spacing: 2px; text-transform: uppercase;">Outfits</a>
+</div>
+<div style="display: flex; justify-content: center; margin-bottom: 2rem;">
     <a href="/wardrobe/add"
-   style="
-       display: inline-block;
-       padding: 10px 18px;
-       background: #b38e7c;
-       color: #f8f6f3;
-       text-decoration: none;
-       border-radius: 50px;
-       font-size: 0.75rem;
-       text-transform: uppercase;
-       letter-spacing: 1.5px;
-   ">
-   Add Clothing Item
-</a>
+       style="
+           display: inline-block;
+           padding: 10px 18px;
+           background: #b38e7c;
+           color: #f8f6f3;
+           text-decoration: none;
+           border-radius: 50px;
+           font-size: 0.75rem;
+           text-transform: uppercase;
+           letter-spacing: 1.5px;
+       ">
+       Add Clothing Item
+    </a>
 </div>
 
 {% if items %}
-    <ul>
+
+<div style="
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+">
     {% for item in items %}
-        <li>
-            {{ item.item_name }} | {{ item.brand }} | {{ item.size }} |
-            {{ item.colours or '—' }} | {{ item.category }} | {{ item.status }} |
-            ${{ "%.2f"|format(item.purchase_price or 0) }}
-        </li>
+    <div style="
+        background: rgba(255,255,255,0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(212,196,176,0.3);
+        border-radius: 12px;
+        padding: 1.25rem;
+        min-height: 340px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    ">
+        <div>
+
+
+            <div style="
+                font-family: 'Cormorant Garamond', serif;
+                font-size: 1.15rem;
+                color: #1a1817;
+                margin-bottom: 0.3rem;
+            ">
+                {{ item.item_name }}
+            </div>
+        <div style="
+            width: 100%;
+            height: 160px;
+            background: #f8f2ea;
+            border: 1px solid rgba(212,196,176,0.2);
+            border-radius: 10px;
+            margin-bottom: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        ">
+        
+            {% if item.image_url %}
+            <img src="{{ item.image_url }}"
+                 alt="{{ item.item_name }}"
+                 style="
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                 ">
+            {% else %}
+            <span style="
+                font-size: 0.7rem;
+                color: #8b7f7a;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            ">
+                No Image
+            </span>
+            {% endif %}
+        
+        </div>
+
+            <div style="
+                font-size: 0.8rem;
+                color: #8b7f7a;
+                margin-bottom: 0.5rem;
+            ">
+                {{ item.brand or '—' }}
+            </div>
+
+            <div style="
+                font-size: 0.75rem;
+                color: #5f5753;
+                line-height: 1.45;
+            ">
+                Size: {{ item.size }}<br>
+                Colour: {{ item.colours or '—' }}<br>
+                Category: {{ item.category }}<br>
+                {% if item.tag %}
+                Tag: {{ item.tag }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div style="margin-top: 1rem;">
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 0.9rem;
+            ">
+                <span style="
+                    font-size: 0.65rem;
+                    background: #ede7e0;
+                    color: #5f5753;
+                    padding: 4px 10px;
+                    border-radius: 50px;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                ">
+                    {{ item.status }}
+                </span>
+
+                <span style="
+                    font-size: 0.85rem;
+                    color: #1a1817;
+                ">
+                    ${{ "%.2f"|format(item.purchase_price or 0) }}
+                </span>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+
+                <form method="GET"
+                      action="/wardrobe/edit/{{ item.item_ID }}"
+                      style="flex: 1; margin: 0;">
+                    <button type="submit"
+                            style="
+                                width: 100%;
+                                height: 34px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                background: #b38e7c;
+                                color: #f8f6f3;
+                                border: none;
+                                border-radius: 50px;
+                                font-size: 0.68rem;
+                                text-transform: uppercase;
+                                letter-spacing: 1px;
+                                cursor: pointer;
+                                padding: 0;
+                                box-sizing: border-box;
+                            ">
+                        Edit
+                    </button>
+                </form>
+            
+                <form method="POST"
+                      action="/wardrobe/delete/{{ item.item_ID }}"
+                      style="flex: 1; margin: 0;">
+                    <button type="submit"
+                            style="
+                                width: 100%;
+                                height: 34px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                background: #8d6e63;
+                                color: #f8f6f3;
+                                border: none;
+                                border-radius: 50px;
+                                font-size: 0.68rem;
+                                text-transform: uppercase;
+                                letter-spacing: 1px;
+                                cursor: pointer;
+                                padding: 0;
+                                box-sizing: border-box;
+                            ">
+                        Delete
+                    </button>
+                </form>
+            
+            </div>
+            
+        </div>
+    </div>
     {% endfor %}
-    </ul>
+</div>
+
 {% else %}
-    <p>No items found.</p>
+
+<p style="
+    text-align: center;
+    margin-top: 2rem;
+    color: #8b7f7a;
+    font-style: italic;
+">
+    No items found.
+</p>
+
 {% endif %}
+
 {% endblock %}

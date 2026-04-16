@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Clothing Item{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Edit Clothing Item</h2>
+
+    {% if error %}
+    <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="item_name">Item Name</label>
+            <input type="text" id="item_name" name="item_name" value="{{ item.item_name }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="brand">Brand</label>
+            <input type="text" id="brand" name="brand" value="{{ item.brand }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="size">Size</label>
+            <input type="text" id="size" name="size" value="{{ item.size }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input type="number" step="0.01" id="price" name="price" value="{{ item.purchase_price }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status" required>
+                <option value="Active" {% if item.status == 'Active' %}selected{% endif %}>Active</option>
+                <option value="Dirty" {% if item.status == 'Dirty' %}selected{% endif %}>Dirty</option>
+                <option value="Laundry" {% if item.status == 'Laundry' %}selected{% endif %}>Laundry</option>
+                <option value="Archived" {% if item.status == 'Archived' %}selected{% endif %}>Archived</option>
+                <option value="Donated" {% if item.status == 'Donated' %}selected{% endif %}>Donated</option>
+                <option value="Sold" {% if item.status == 'Sold' %}selected{% endif %}>Sold</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="subcategory_id">Subcategory</label>
+            <select id="subcategory_id" name="subcategory_id" required>
+                {% for s in subcategories %}
+                <option value="{{ s.subcategory_ID }}" {% if s.subcategory_ID == item.subcategory_ID %}selected{% endif %}>
+                    {{ s.category }} / {{ s.subcategory_name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="colour">Colour</label>
+            <input type="text" id="colour" name="colour" value="{{ item.colours or '' }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="tag">Tag</label>
+            <input type="text" id="tag" name="tag" value="{{ item.tag or '' }}">
+        </div>
+        
+        <div class="form-group">
+            <label for="image_url">Image URL (optional)</label>
+            <input type="url" id="image_url" name="image_url" value="{{ item.image_url or '' }}">
+        </div>
+
+        <button type="submit">Save Changes</button>
+    </form>
+</div>
+{% endblock %}
