@@ -47,7 +47,7 @@
 </head>
 <body>
     <nav>
-        <h1>aniwe</h1>
+        <a href="/" style="text-decoration:none;color:inherit;"><h1>aniwe</h1></a>
         <div class="nav-links">
             <a href="/products">Products</a>
             <a href="/">Home</a>
@@ -68,6 +68,7 @@
                 <span class="tag">{{ product.subcategory_name }}</span>
                 {% if product.tag %}<span class="tag">{{ product.tag }}</span>{% endif %}
                 {% for season in product.seasons %}<span class="tag">{{ season }}</span>{% endfor %}
+                {% for size in product.sizes %}<span class="tag">{{ size }}</span>{% endfor %}
             </div>
         </div>
         <div class="divider"></div>

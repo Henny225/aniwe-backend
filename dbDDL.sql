@@ -4,8 +4,8 @@ USE AniweDB;
 
 -- 2. Cleanup Section (Ensures a fresh start)
 SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS CONSUMER_STYLE_PREFERENCE_LOG, STOCKS, REVIEW, ORDER_ITEM, `ORDER`, 
-                    ACCESS_LOG, PRODUCT_SEASON, PRODUCT, CONSISTS_OF, OUTFIT_SEASON, 
+DROP TABLE IF EXISTS CONSUMER_STYLE_PREFERENCE_LOG, STOCKS, REVIEW, ORDER_ITEM, `ORDER`,
+                    ACCESS_LOG, PRODUCT_SEASON, PRODUCT_SIZE, PRODUCT, CONSISTS_OF, OUTFIT_SEASON,
                     OUTFIT_OCCASION, OUTFIT, CLOTHING_ITEM_COLOUR, CLOTHING_ITEM, 
                     SUBCATEGORY, CONSUMER_STYLE_PREFERENCES, ADMINISTRATOR, 
                     RETAIL_PARTNER, CONSUMER, USER;
@@ -171,6 +171,13 @@ CREATE TABLE PRODUCT_SEASON (
     FOREIGN KEY (product_ID) REFERENCES PRODUCT(product_ID) ON DELETE CASCADE
 );
 
+CREATE TABLE PRODUCT_SIZE (
+    product_ID INT,
+    size VARCHAR(20),
+    PRIMARY KEY (product_ID, size),
+    FOREIGN KEY (product_ID) REFERENCES PRODUCT(product_ID) ON DELETE CASCADE
+);
+
 CREATE TABLE ACCESS_LOG (
     log_ID INT PRIMARY KEY AUTO_INCREMENT,
     user_ID INT NOT NULL,
@@ -194,6 +201,7 @@ CREATE TABLE ORDER_ITEM (
     order_id INT NOT NULL,
     line_num INT NOT NULL,
     product_id INT NOT NULL,
+    size VARCHAR(20) NOT NULL DEFAULT 'One Size',
     quantity INT NOT NULL CHECK (quantity > 0),
     unit_price DECIMAL(10,2) NOT NULL,
     PRIMARY KEY (order_id, line_num),
@@ -216,10 +224,11 @@ CREATE TABLE REVIEW (
 CREATE TABLE STOCKS (
     retailer_id INT NOT NULL,
     product_id INT NOT NULL,
+    size VARCHAR(20) NOT NULL DEFAULT 'One Size',
     stock_quantity INT DEFAULT 0,
     restock_threshold INT DEFAULT 10,
     last_updated DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (retailer_id, product_id),
+    PRIMARY KEY (retailer_id, product_id, size),
     FOREIGN KEY (retailer_id) REFERENCES RETAIL_PARTNER(retailer_ID) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES PRODUCT(product_ID) ON DELETE CASCADE
 );
@@ -242,9 +251,9 @@ AFTER INSERT ON ORDER_ITEM
 FOR EACH ROW
 BEGIN
     UPDATE STOCKS s
-    JOIN PRODUCT p ON p.product_id = NEW.product_id
+    JOIN PRODUCT p ON p.product_ID = NEW.product_id
     SET s.stock_quantity = s.stock_quantity - NEW.quantity
-    WHERE s.retailer_id = p.retailer_id AND s.product_id = NEW.product_id;
+    WHERE s.retailer_id = p.retailer_ID AND s.product_id = NEW.product_id AND s.size = NEW.size;
 END //
 
 DELIMITER ;

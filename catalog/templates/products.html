@@ -37,7 +37,7 @@
 </head>
 <body>
     <nav>
-        <h1>aniwe</h1>
+        <a href="/" style="text-decoration:none;color:inherit;"><h1>aniwe</h1></a>
         <div class="nav-links">
             <a href="/products">Products</a>
             <a href="/">Home</a>
@@ -49,7 +49,7 @@
         {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="flash flash-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
         <div class="page-header">
             <h2>{% if role == "RETAIL_PARTNER" %}Your Products{% else %}Product Catalog{% endif %}</h2>
-            {% if role == "RETAIL_PARTNER" %}<a href="/products/add" class="btn">+ Add Product</a>{% endif %}
+            {% if role in ("RETAIL_PARTNER", "ADMINISTRATOR") %}<a href="/products/add" class="btn">+ Add Product</a>{% endif %}
         </div>
         <div class="product-grid">
             {% for product in products %}
@@ -61,6 +61,7 @@
                     <span class="tag">{{ product.category }}</span>
                     <span class="tag">{{ product.subcategory_name }}</span>
                     {% for season in product.seasons %}<span class="tag">{{ season }}</span>{% endfor %}
+                    {% for size in product.sizes %}<span class="tag">{{ size }}</span>{% endfor %}
                 </div>
                 {% if role == "ADMINISTRATOR" %}
                 <form action="/products/{{ product.product_ID }}/delete" method="POST" class="delete-form" onclick="event.preventDefault();">
