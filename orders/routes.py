@@ -97,6 +97,13 @@ def new_order():
     try:
         cursor.execute("SELECT product_ID, name, price FROM PRODUCT")
         products = cursor.fetchall()
+        sizes_map = {}
+        if products:
+            product_ids = [p["product_ID"] for p in products]
+            fmt = ",".join(["%s"] * len(product_ids))
+            cursor.execute(f"SELECT product_ID, size FROM PRODUCT_SIZE WHERE product_ID IN ({fmt})", tuple(product_ids))
+            for row in cursor.fetchall():
+                sizes_map.setdefault(str(row["product_ID"]), []).append(row["size"])
     except Exception as e:
         print("Products fetch error:", e)
     finally:
@@ -106,6 +113,7 @@ def new_order():
     if request.method == 'POST':
         product_id = request.form.get('product_id')
         quantity = request.form.get('quantity')
+        size = request.form.get('size', 'One Size') or 'One Size'
 
         # Error handling: empty fields
         if not product_id or not quantity:
@@ -121,9 +129,9 @@ def new_order():
                     SELECT s.stock_quantity, p.price as unit_price
                     FROM STOCKS s
                     JOIN PRODUCT p ON p.product_ID = s.product_id
-                    WHERE s.product_id = %s
+                    WHERE s.product_id = %s AND s.size = %s
                     LIMIT 1
-                """, (product_id,))
+                """, (product_id, size))
                 stock = cursor.fetchone()
 
                 if not stock or stock['stock_quantity'] < int(quantity):
@@ -138,11 +146,11 @@ def new_order():
                     """, (session['user_id'],))
                     order_id = cursor.lastrowid
 
-                    # Insert ORDER_ITEM (trigger auto-updates total)
+                    # Insert ORDER_ITEM with size (trigger auto-decrements stock)
                     cursor.execute("""
-                        INSERT INTO ORDER_ITEM (order_id, line_num, product_id, quantity, unit_price)
-                        VALUES (%s, 1, %s, %s, %s)
-                    """, (order_id, product_id, quantity, unit_price))
+                        INSERT INTO ORDER_ITEM (order_id, line_num, product_id, size, quantity, unit_price)
+                        VALUES (%s, 1, %s, %s, %s, %s)
+                    """, (order_id, product_id, size, quantity, unit_price))
 
                     db.commit()
                     return redirect('/orders')
@@ -155,7 +163,7 @@ def new_order():
                 cursor.close()
                 db.close()
 
-    return render_template('orders/new_order.html', products=products, error=error)
+    return render_template('orders/new_order.html', products=products, sizes_map=sizes_map, error=error)
 
 
 # ── Profile page ──────────────────────────────────────────────

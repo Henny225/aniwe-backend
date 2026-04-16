@@ -31,7 +31,7 @@
 </head>
 <body>
     <nav>
-        <h1>aniwe</h1>
+        <a href="/" style="text-decoration:none;color:inherit;"><h1>aniwe</h1></a>
         <p>Place Order</p>
     </nav>
     <div class="divider"></div>
@@ -68,6 +68,11 @@
                     </div>
                 </div>
 
+                <div class="form-group" id="sizeGroup" style="display:none;">
+                    <label>Size</label>
+                    <select name="size" id="sizeSelect"></select>
+                </div>
+
                 <div class="form-group">
                     <label>Quantity</label>
                     <input type="number" name="quantity" min="1" value="1" required>
@@ -82,16 +87,32 @@
     <footer>aniwe &mdash; AI-Powered Fashion Stylist</footer>
 
     <script>
+        var sizesMap = {{ sizes_map | tojson }};
+
         function showProductInfo() {
             var select = document.getElementById('productSelect');
             var info = document.getElementById('productInfo');
+            var sizeGroup = document.getElementById('sizeGroup');
+            var sizeSelect = document.getElementById('sizeSelect');
             var option = select.options[select.selectedIndex];
+
             if (option.value) {
                 document.getElementById('productName').textContent = option.dataset.name;
-                document.getElementById('productPrice').textContent = '$' + option.dataset.price;
+                document.getElementById('productPrice').textContent = '$' + parseFloat(option.dataset.price).toFixed(2);
                 info.style.display = 'block';
+
+                var sizes = sizesMap[option.value] || ['One Size'];
+                sizeSelect.innerHTML = '';
+                sizes.forEach(function(size) {
+                    var opt = document.createElement('option');
+                    opt.value = size;
+                    opt.textContent = size;
+                    sizeSelect.appendChild(opt);
+                });
+                sizeGroup.style.display = 'block';
             } else {
                 info.style.display = 'none';
+                sizeGroup.style.display = 'none';
             }
         }
     </script>

@@ -33,7 +33,7 @@
 </head>
 <body>
     <nav>
-        <h1>aniwe</h1>
+        <a href="/" style="text-decoration:none;color:inherit;"><h1>aniwe</h1></a>
         <div class="nav-links">
             <a href="/products">Products</a>
             <a href="/">Home</a>
@@ -47,6 +47,11 @@
         <div class="form-card">
             <h2>Add New Product</h2>
             <form method="POST" action="/products/add">
+                {% if role == "ADMINISTRATOR" %}
+                <div class="form-group"><label>Retailer <span class="required">*</span></label>
+                    <select name="retailer_id" required><option value="">Select a retailer</option>{% for r in retailers %}<option value="{{ r.retailer_ID }}">{{ r.brand_name }}</option>{% endfor %}</select>
+                </div>
+                {% endif %}
                 <div class="form-group"><label>Product Name <span class="required">*</span></label><input type="text" name="name" placeholder="e.g. Silk Evening Blouse" required></div>
                 <div class="form-group"><label>Description</label><textarea name="description" placeholder="Describe the product..."></textarea></div>
                 <div class="form-group"><label>Price <span class="required">*</span></label><input type="number" name="price" step="0.01" min="0" placeholder="0.00" required></div>
@@ -60,6 +65,17 @@
                         <label><input type="checkbox" name="seasons" value="Summer"> Summer</label>
                         <label><input type="checkbox" name="seasons" value="Fall"> Fall</label>
                         <label><input type="checkbox" name="seasons" value="Winter"> Winter</label>
+                    </div>
+                </div>
+                <div class="form-group"><label>Sizes</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="sizes" value="XS"> XS</label>
+                        <label><input type="checkbox" name="sizes" value="S"> S</label>
+                        <label><input type="checkbox" name="sizes" value="M"> M</label>
+                        <label><input type="checkbox" name="sizes" value="L"> L</label>
+                        <label><input type="checkbox" name="sizes" value="XL"> XL</label>
+                        <label><input type="checkbox" name="sizes" value="XXL"> XXL</label>
+                        <label><input type="checkbox" name="sizes" value="One Size"> One Size</label>
                     </div>
                 </div>
                 <button type="submit" class="btn">Add Product</button>

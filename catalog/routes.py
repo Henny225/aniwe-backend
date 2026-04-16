@@ -40,9 +40,19 @@ def products():
         """)
 
     if products:
+        product_ids = [p["product_ID"] for p in products]
+        fmt = ",".join(["%s"] * len(product_ids))
+        all_seasons = execute_query(f"SELECT product_ID, season FROM PRODUCT_SEASON WHERE product_ID IN ({fmt})", tuple(product_ids))
+        seasons_map = {}
+        for row in (all_seasons or []):
+            seasons_map.setdefault(row["product_ID"], []).append(row["season"])
+        all_sizes = execute_query(f"SELECT product_ID, size FROM PRODUCT_SIZE WHERE product_ID IN ({fmt})", tuple(product_ids))
+        sizes_map = {}
+        for row in (all_sizes or []):
+            sizes_map.setdefault(row["product_ID"], []).append(row["size"])
         for product in products:
-            seasons = execute_query("SELECT season FROM PRODUCT_SEASON WHERE product_ID = %s", (product["product_ID"],))
-            product["seasons"] = [r["season"] for r in seasons] if seasons else []
+            product["seasons"] = seasons_map.get(product["product_ID"], [])
+            product["sizes"] = sizes_map.get(product["product_ID"], [])
     else:
         products = []
 
@@ -70,6 +80,12 @@ def product_detail(product_id):
 
     seasons = execute_query("SELECT season FROM PRODUCT_SEASON WHERE product_ID = %s", (product_id,))
     product["seasons"] = [r["season"] for r in seasons] if seasons else []
+
+    sizes = execute_query(
+        "SELECT size FROM PRODUCT_SIZE WHERE product_ID = %s ORDER BY FIELD(size,'XS','S','M','L','XL','XXL','One Size')",
+        (product_id,)
+    )
+    product["sizes"] = [r["size"] for r in sizes] if sizes else []
 
     reviews = execute_query("""
         SELECT r.rating, r.review_text, r.review_date, u.first_name, u.last_name
@@ -118,12 +134,14 @@ def submit_review(product_id):
 @login_required
 def add_product():
     role = get_role()
-    if role != "RETAIL_PARTNER":
+    if role not in ("RETAIL_PARTNER", "ADMINISTRATOR"):
         flash("Only retailers can add products", "error")
         return redirect(url_for("catalog.products"))
 
     user_id = session.get("user_id")
     first_name = session.get("first_name", "User")
+    subcategories = execute_query("SELECT * FROM SUBCATEGORY")
+    retailers = execute_query("SELECT retailer_ID, brand_name FROM RETAIL_PARTNER") if role == "ADMINISTRATOR" else []
 
     if request.method == "POST":
         name = request.form.get("name", "").strip()
@@ -132,18 +150,25 @@ def add_product():
         tag = request.form.get("tag", "").strip()
         subcategory_id = request.form.get("subcategory_id", "").strip()
         seasons = request.form.getlist("seasons")
+        sizes = request.form.getlist("sizes")
 
-        if not name or not price or not subcategory_id:
+        if role == "ADMINISTRATOR":
+            retailer_id = request.form.get("retailer_id", "").strip()
+        else:
+            retailer_id = str(user_id)
+
+        if not name or not price or not subcategory_id or not retailer_id:
             flash("Please fill in all required fields", "error")
-            subcategories = execute_query("SELECT * FROM SUBCATEGORY")
-            return render_template("add_product.html", role=role, first_name=first_name, subcategories=subcategories or [])
+            return render_template("add_product.html", role=role, first_name=first_name, subcategories=subcategories or [], retailers=retailers)
 
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("INSERT INTO PRODUCT (retailer_ID, subcategory_ID, name, description, price, tag) VALUES (%s, %s, %s, %s, %s, %s)", (user_id, int(subcategory_id), name, description, float(price), tag))
+        cursor.execute("INSERT INTO PRODUCT (retailer_ID, subcategory_ID, name, description, price, tag) VALUES (%s, %s, %s, %s, %s, %s)", (int(retailer_id), int(subcategory_id), name, description, float(price), tag))
         product_id = cursor.lastrowid
         for season in seasons:
             cursor.execute("INSERT INTO PRODUCT_SEASON (product_ID, season) VALUES (%s, %s)", (product_id, season))
+        for size in sizes:
+            cursor.execute("INSERT INTO PRODUCT_SIZE (product_ID, size) VALUES (%s, %s)", (product_id, size))
         conn.commit()
         cursor.close()
         conn.close()
@@ -151,8 +176,7 @@ def add_product():
         flash("Product added successfully!", "success")
         return redirect(url_for("catalog.products"))
 
-    subcategories = execute_query("SELECT * FROM SUBCATEGORY")
-    return render_template("add_product.html", role=role, first_name=first_name, subcategories=subcategories or [])
+    return render_template("add_product.html", role=role, first_name=first_name, subcategories=subcategories or [], retailers=retailers)
 
 
 @catalog.route("/products/<int:product_id>/delete", methods=["POST"])
