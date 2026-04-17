@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, redirect, request, jsonify
 import mysql.connector
 from utils import normalize_account_type
+from database import get_connection
 
 orders_bp = Blueprint('orders', __name__)
 
@@ -28,7 +29,10 @@ def orders():
     check = login_required()
     if check: return check
 
-    db = get_db()
+    db = get_connection()
+    if not db:
+        return render_template('orders/orders.html', orders=[], role=normalize_account_type(session.get('role')), error="Database connection failed")
+    
     cursor = db.cursor(dictionary=True)
 
     try:
@@ -355,7 +359,7 @@ def profile():
                            error=error, success=success)
 
 
-# low stock for Retailers
+# ── Low Stock for Retailers ───────────────────────────────────
 @orders_bp.route('/low-stock')
 def low_stock():
     check = login_required()
@@ -386,7 +390,7 @@ def low_stock():
     return render_template('orders/low_stock.html', items=rows, role=role)
 
 
-# Changing status of the order:Retailer
+# ── Update Order Status (Retailer) ────────────────────────────
 @orders_bp.route('/orders/update-status/<int:order_id>', methods=['POST'])
 def update_order_status(order_id):
     check = login_required()
@@ -427,9 +431,8 @@ def update_order_status(order_id):
             WHERE order_id = %s
         """, (new_status, order_id))
 
-     
-# Если отменяется заказ который был pending или processing
-# возвращаем stock обратно
+        # Если отменяется заказ который был pending или processing
+        # возвращаем stock обратно
         if new_status == 'cancelled' and old_status in ('pending', 'processing'):
             cursor.execute("""
                 SELECT oi.product_id, oi.quantity, p.retailer_ID
@@ -447,8 +450,6 @@ def update_order_status(order_id):
                     WHERE product_id = %s AND retailer_id = %s
                 """, (item['quantity'], item['product_id'], item['retailer_ID']))
 
-
-
         db.commit()
 
     except Exception as e:
@@ -459,3 +460,256 @@ def update_order_status(order_id):
         db.close()
 
     return redirect('/orders')
+
+
+# ── Update Profile (from settings dropdown) ────────────────────
+@orders_bp.route('/update-profile', methods=['GET', 'POST'])
+def update_profile():
+    check = login_required()
+    if check: return check
+
+    error = None
+    success = None
+    user = None
+
+    db = get_connection()
+    if not db:
+        error = "Database connection failed"
+        return render_template('orders/update_profile.html', user=user, role=normalize_account_type(session.get('role')), error=error, success=success)
+    
+    cursor = db.cursor(dictionary=True)
+
+    try:
+        role = normalize_account_type(session.get('role'))
+        user_id = session.get('user_id')
+
+        if role == 'CONSUMER':
+            cursor.execute("""
+                SELECT u.first_name, u.last_name, u.email, u.phone_number,
+                       c.street_address, c.city, c.postal_code, c.country
+                FROM USER u
+                JOIN CONSUMER c ON c.consumer_ID = u.user_id
+                WHERE u.user_id = %s
+            """, (user_id,))
+
+        elif role == 'RETAIL_PARTNER':
+            cursor.execute("""
+                SELECT u.first_name, u.last_name, u.email, u.phone_number,
+                       r.brand_name, r.website_url, r.store_description
+                FROM USER u
+                JOIN RETAIL_PARTNER r ON r.retailer_ID = u.user_id
+                WHERE u.user_id = %s
+            """, (user_id,))
+
+        elif role == 'ADMINISTRATOR':
+            cursor.execute("""
+                SELECT user_id, first_name, last_name, email,
+                       account_type, account_status
+                FROM USER
+                WHERE user_id = %s
+            """, (user_id,))
+
+        user = cursor.fetchone()
+
+    except Exception as e:
+        print("Update profile fetch error:", e)
+        import traceback
+        traceback.print_exc()
+    finally:
+        cursor.close()
+        db.close()
+
+    if request.method == 'POST':
+        role = normalize_account_type(session.get('role'))
+
+        if role == 'CONSUMER':
+            first_name = request.form.get('first_name')
+            last_name = request.form.get('last_name')
+            phone = request.form.get('phone_number')
+            address = request.form.get('street_address')
+            city = request.form.get('city')
+            postal = request.form.get('postal_code')
+            country = request.form.get('country')
+
+            if not first_name or not last_name:
+                error = "Please fill in all fields."
+            else:
+                db = get_connection()
+                cursor = db.cursor()
+                try:
+                    cursor.execute("""
+                        UPDATE USER SET first_name=%s, last_name=%s, phone_number=%s
+                        WHERE user_id=%s
+                    """, (first_name, last_name, phone, session['user_id']))
+                    cursor.execute("""
+                        UPDATE CONSUMER SET street_address=%s, city=%s,
+                        postal_code=%s, country=%s
+                        WHERE consumer_ID=%s
+                    """, (address, city, postal, country, session['user_id']))
+                    db.commit()
+                    success = "Profile updated successfully."
+                    session['first_name'] = first_name
+                except Exception as e:
+                    db.rollback()
+                    error = "Something went wrong. Please try again."
+                    print("Profile update error:", e)
+                finally:
+                    cursor.close()
+                    db.close()
+
+        elif role == 'RETAIL_PARTNER':
+            first_name = request.form.get('first_name')
+            last_name = request.form.get('last_name')
+            phone = request.form.get('phone_number')
+            brand = request.form.get('brand_name')
+            website = request.form.get('website_url')
+            description = request.form.get('store_description')
+
+            if not brand:
+                error = "Please fill in all fields."
+            else:
+                db = get_connection()
+                cursor = db.cursor()
+                try:
+                    cursor.execute("""
+                        UPDATE USER SET first_name=%s, last_name=%s, phone_number=%s
+                        WHERE user_id=%s
+                    """, (first_name, last_name, phone, session['user_id']))
+                    cursor.execute("""
+                        UPDATE RETAIL_PARTNER SET brand_name=%s, website_url=%s,
+                        store_description=%s WHERE retailer_ID=%s
+                    """, (brand, website, description, session['user_id']))
+                    db.commit()
+                    success = "Profile updated successfully."
+                    session['first_name'] = first_name
+                except Exception as e:
+                    db.rollback()
+                    error = "Something went wrong. Please try again."
+                    print("Retailer profile update error:", e)
+                finally:
+                    cursor.close()
+                    db.close()
+
+        elif role == 'ADMINISTRATOR':
+            first_name = request.form.get('first_name')
+            last_name = request.form.get('last_name')
+            phone = request.form.get('phone_number')
+
+            if not first_name or not last_name:
+                error = "Please fill in all fields."
+            else:
+                db = get_connection()
+                cursor = db.cursor()
+                try:
+                    cursor.execute("""
+                        UPDATE USER SET first_name=%s, last_name=%s, phone_number=%s
+                        WHERE user_id=%s
+                    """, (first_name, last_name, phone, session['user_id']))
+                    db.commit()
+                    success = "Profile updated successfully."
+                    session['first_name'] = first_name
+                except Exception as e:
+                    db.rollback()
+                    error = "Something went wrong. Please try again."
+                    print("Admin profile update error:", e)
+                finally:
+                    cursor.close()
+                    db.close()
+
+    return render_template('orders/update_profile.html',
+                           user=user, role=normalize_account_type(session.get('role')),
+                           error=error, success=success)
+
+
+# ── Change Password ────────────────────────────────────────────
+@orders_bp.route('/change-password', methods=['GET', 'POST'])
+def change_password():
+    check = login_required()
+    if check: return check
+
+    error = None
+    success = None
+
+    if request.method == 'POST':
+        from utils import verify_password, hash_password
+        
+        old_password = request.form.get('old_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+
+        if not old_password or not new_password or not confirm_password:
+            error = "Please fill in all fields."
+        elif new_password != confirm_password:
+            error = "New passwords do not match."
+        elif len(new_password) < 6:
+            error = "Password must be at least 6 characters."
+        else:
+            db = get_db()
+            cursor = db.cursor(dictionary=True)
+            try:
+                # Get current user password hash
+                cursor.execute("SELECT password_hash FROM USER WHERE user_id = %s", (session['user_id'],))
+                user = cursor.fetchone()
+
+                if not user:
+                    error = "User not found."
+                elif not verify_password(old_password, user['password_hash']):
+                    error = "Current password is incorrect."
+                else:
+                    # Update password
+                    new_hash = hash_password(new_password)
+                    cursor.execute("""
+                        UPDATE USER SET password_hash=%s WHERE user_id=%s
+                    """, (new_hash, session['user_id']))
+                    db.commit()
+                    success = "Password changed successfully."
+            except Exception as e:
+                db.rollback()
+                error = "Something went wrong. Please try again."
+                print("Password change error:", e)
+            finally:
+                cursor.close()
+                db.close()
+
+    return render_template('orders/change_password.html', error=error, success=success)
+
+
+# ── Delete Account ────────────────────────────────────────────
+@orders_bp.route('/delete-account', methods=['POST'])
+def delete_account():
+    check = login_required()
+    if check: 
+        return jsonify({'success': False, 'message': 'Not authenticated'}), 401
+
+    user_id = session.get('user_id')
+
+    db = get_db()
+    cursor = db.cursor()
+
+    try:
+        # Get user role to delete from role-specific tables
+        role = normalize_account_type(session.get('role'))
+
+        # Delete from role-specific tables first (due to foreign keys)
+        if role == 'CONSUMER':
+            cursor.execute("DELETE FROM CONSUMER WHERE consumer_ID = %s", (user_id,))
+        elif role == 'RETAIL_PARTNER':
+            cursor.execute("DELETE FROM RETAIL_PARTNER WHERE retailer_ID = %s", (user_id,))
+        elif role == 'ADMINISTRATOR':
+            cursor.execute("DELETE FROM ADMINISTRATOR WHERE admin_ID = %s", (user_id,))
+
+        # Delete from USER table
+        cursor.execute("DELETE FROM USER WHERE user_id = %s", (user_id,))
+        db.commit()
+
+        # Clear session
+        session.clear()
+
+        return jsonify({'success': True, 'message': 'Account deleted successfully'}), 200
+    except Exception as e:
+        db.rollback()
+        print("Account deletion error:", e)
+        return jsonify({'success': False, 'message': 'Error deleting account'}), 500
+    finally:
+        cursor.close()
+        db.close()
