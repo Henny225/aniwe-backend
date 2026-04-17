@@ -33,9 +33,15 @@
         .nav-links {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            align-items: center;
+            gap: 15px;
             margin-top: 1rem;
             padding: 0 20px;
+        }
+        
+        .nav-links > span {
+            display: flex;
+            align-items: center;
         }
         
         .nav-links a {
@@ -197,6 +203,133 @@
             letter-spacing: 2px; 
         }
         
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-toggle {
+            font-size: 0.7rem;
+            color: #2c2828;
+            text-decoration: none;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border: 1px solid rgba(212,196,176,0.4);
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: none;
+            width: auto;
+            margin: 0;
+            font-weight: 300;
+        }
+        
+        .dropdown-toggle:hover {
+            background: #1a1817;
+            color: #f8f6f3;
+            border-color: #1a1817;
+        }
+        
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background: rgba(255,255,255,0.95);
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            padding: 8px 0;
+            border-radius: 8px;
+            border: 1px solid rgba(212,196,176,0.3);
+            top: 100%;
+            right: 0;
+            z-index: 1000;
+            margin-top: 8px;
+        }
+        
+        .dropdown-menu.active {
+            display: block;
+        }
+        
+        .dropdown-menu a, .dropdown-menu button {
+            color: #2c2828;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            text-align: left;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-family: Inter, sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+        
+        .dropdown-menu a:hover, .dropdown-menu button:hover {
+            background: rgba(26,24,23,0.08);
+            color: #1a1817;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: rgba(212,196,176,0.2);
+            margin: 4px 0;
+        }
+        
+        .submenu {
+            display: none;
+            position: absolute;
+            background: rgba(255,255,255,0.95);
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            padding: 8px 0;
+            border-radius: 8px;
+            border: 1px solid rgba(212,196,176,0.3);
+            left: 100%;
+            top: -8px;
+            margin-left: 4px;
+            z-index: 1001;
+        }
+        
+        .submenu.active {
+            display: block;
+        }
+        
+        .submenu a {
+            padding: 10px 20px;
+            font-size: 0.7rem;
+        }
+        
+        .privacy-item {
+            position: relative;
+            color: #2c2828;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            text-align: left;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-family: Inter, sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+        }
+        
+        .privacy-item:hover {
+            background: rgba(26,24,23,0.08);
+            color: #1a1817;
+        }
+        
+        .privacy-item::after {
+            content: '▶';
+            position: absolute;
+            right: 15px;
+            font-size: 0.6rem;
+        }
+        
         {% block extra_styles %}{% endblock %}
     </style>
 </head>
@@ -207,7 +340,21 @@
         {% if session.get('user_id') %}
         <div class="nav-links">
             <span style="font-size: 0.75rem; color: #8b7f7a; letter-spacing: 1.5px;">{{ session.get('first_name') }}</span>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <div class="dropdown-container">
+                <button class="dropdown-toggle" onclick="toggleDropdown(event)">Settings</button>
+                <div class="dropdown-menu" id="settingsDropdown">
+                    <a href="{{ url_for('orders.update_profile') }}">Update Profile</a>
+                    <div class="privacy-item" onclick="toggleSubmenu(event)">
+                        PRIVACY
+                        <div class="submenu" id="privacySubmenu">
+                            <a href="{{ url_for('orders.change_password') }}">Change Password</a>
+                            <a href="#" onclick="showDeleteConfirmation(event)">Delete Account</a>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </div>
+            </div>
         </div>
         {% endif %}
     </nav>
@@ -218,6 +365,53 @@
     </div>
     
     <footer>aniwe &mdash; Inventory Management System</footer>
+    
+    <script>
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('settingsDropdown');
+            dropdown.classList.toggle('active');
+        }
+        
+        function toggleSubmenu(event) {
+            event.stopPropagation();
+            const submenu = event.currentTarget.querySelector('.submenu');
+            submenu.classList.toggle('active');
+        }
+        
+        function showDeleteConfirmation(event) {
+            event.preventDefault();
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                fetch('{{ url_for("orders.delete_account") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Account deleted successfully.');
+                        window.location.href = '{{ url_for("login") }}';
+                    } else {
+                        alert('Error: ' + (data.message || 'Failed to delete account'));
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('settingsDropdown');
+            const container = document.querySelector('.dropdown-container');
+            if (!container.contains(event.target)) {
+                dropdown.classList.remove('active');
+                const submenu = dropdown.querySelector('.submenu');
+                if (submenu) submenu.classList.remove('active');
+            }
+        });
+    </script>
     
     {% block scripts %}{% endblock %}
 </body>
