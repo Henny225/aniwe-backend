@@ -60,7 +60,7 @@
         {% endif %}
 
         <!-- ── Consumer profile ── -->
-        {% if role == 'CONSUMER' and user %}
+        {% if role|lower == 'consumer' and user %}
         <div class="card">
             <h2>My Profile</h2>
             <form method="POST">
@@ -105,7 +105,7 @@
         </div>
 
         <!-- ── Retailer profile ── -->
-        {% elif role == 'RETAIL_PARTNER' and user %}
+        {% elif role|lower == 'retail_partner' and user %}
         <div class="card">
             <h2>Store Profile</h2>
             <form method="POST">
@@ -140,7 +140,7 @@
         </div>
 
         <!-- ── Admin: all users ── -->
-        {% elif role == 'ADMINISTRATOR' and user %}
+        {% elif role|lower == 'administrator' and user %}
         <div class="card">
             <h2>All Users</h2>
             <table>
