@@ -15,23 +15,132 @@
     <div class="error-message">{{ error }}</div>
     {% endif %}
 
-    <form method="POST">
+    <form method="POST" onsubmit="return validateOutfitForm()">
         <div class="form-group">
             <label for="outfit_name">Outfit Name</label>
             <input type="text" id="outfit_name" name="outfit_name" 
                     value="{{ outfit.outfit_name if outfit else '' }}" required>
         </div>
 
+        {% if is_edit %}
         <div class="form-group">
-            <label for="occasion">Occasion</label>
-            <input type="text" id="occasion" name="occasion"
-                value="{{ outfit.occasion if outfit else '' }}" required>
+            <label for="times_worn">Times Worn</label>
+            <input type="number" id="times_worn" name="times_worn" min="0"
+                value="{{ outfit.times_worn if outfit else 0 }}">
+        </div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label>Occasions</label>
+        
+            <div id="occasion-fields">
+                {% if outfit and outfit.occasions %}
+                    {% for occasion in outfit.occasions %}
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <input type="text"
+                               name="occasions"
+                               value="{{ occasion }}"
+                               style="flex: 1;">
+                        <button type="button"
+                                onclick="removeOccasionField(this)"
+                                style="
+                                    width: 36px;
+                                    height: 36px;
+                                    border: none;
+                                    border-radius: 50%;
+                                    background: #8d6e63;
+                                    color: #f8f6f3;
+                                    cursor: pointer;
+                                ">
+                            −
+                        </button>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <input type="text"
+                               name="occasions"
+                               placeholder="Enter occasion"
+                               style="flex: 1;">
+                        <button type="button"
+                                onclick="removeOccasionField(this)"
+                                style="
+                                    width: 36px;
+                                    height: 36px;
+                                    border: none;
+                                    border-radius: 50%;
+                                    background: #8d6e63;
+                                    color: #f8f6f3;
+                                    cursor: pointer;
+                                ">
+                            −
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        
+            <div style="margin-top: 8px;">
+                <button type="button"
+                        onclick="addOccasionField()"
+                        style="
+                            display: inline-block;
+                            padding: 8px 14px;
+                            width: 150px;
+                            background: #b38e7c;
+                            color: #f8f6f3;
+                            border: none;
+                            border-radius: 50px;
+                            font-size: 0.72rem;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            cursor: pointer;
+                        ">
+                    + Add Occasion
+                </button>
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="season">Season</label>
-            <input type="text" id="season" name="season" 
-            value="{{ outfit.season if outfit else '' }}" required>
+            <label>Seasons</label>
+        
+            <div style="
+                /* border: 1px solid rgba(212,196,176,0.3); */
+                border-radius: 10px;
+                padding: 6px 10px;
+                /* background: rgba(255,255,255,0.45); */
+            ">
+        
+                {% set seasons = ['Spring', 'Summer', 'Fall', 'Winter'] %}
+        
+                {% for season in seasons %}
+                <label style="
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 8px 10px;
+                    margin-bottom: 4px;
+                    /* border-bottom: 1px solid rgba(212,196,176,0.2); */
+                    cursor: pointer;
+                    font-size: 0.85rem;
+                    color: #706a6a;
+                ">
+                    <input type="checkbox"
+                           name="seasons"
+                           value="{{ season }}"
+                           style="
+                               width: auto;
+                               flex: 0 0 auto;
+                               transform: scale(1.05);
+                               margin: 0;
+                               padding: 0;
+                           "
+                           {% if outfit and season in outfit.selected_seasons %}checked{% endif %}>
+        
+                    <span>{{ season }}</span>
+                </label>
+                {% endfor %}
+        
+            </div>
         </div>
 
         <div class="form-group">
@@ -43,7 +152,7 @@
                 gap: 10px;
                 padding: 8px 10px;
                 margin-bottom: 6px;
-                border-bottom: 1px solid rgba(212,196,176,0.2);
+                /* border-bottom: 1px solid rgba(212,196,176,0.2); */
                 cursor: pointer;
                 font-size: 0.85rem;
                 color: #706a6a;
@@ -70,4 +179,86 @@
         <button type="submit">{% if is_edit %}Save Changes{% else %}Create Outfit{% endif %}</button>
     </form>
 </div>
+<script>
+    function validateOutfitForm() {
+        const seasonCheckboxes = document.querySelectorAll('input[name="seasons"]');
+        const itemCheckboxes = document.querySelectorAll('input[name="item_ids"]');
+    
+        const seasonChecked = Array.from(seasonCheckboxes).some(cb => cb.checked);
+        const itemChecked = Array.from(itemCheckboxes).some(cb => cb.checked);
+    
+        seasonCheckboxes.forEach(cb => cb.setCustomValidity(""));
+        itemCheckboxes.forEach(cb => cb.setCustomValidity(""));
+    
+        if (!seasonChecked) {
+            seasonCheckboxes[0].setCustomValidity("Please select at least one season");
+            seasonCheckboxes[0].reportValidity();
+            return false;
+        }
+    
+        if (!itemChecked) {
+            itemCheckboxes[0].setCustomValidity("Please select at least one item");
+            itemCheckboxes[0].reportValidity();
+            return false;
+        }
+    
+        return true;
+    }
+    
+    const seasonCheckboxes = document.querySelectorAll('input[name="seasons"]');
+    seasonCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function () {
+            seasonCheckboxes.forEach(box => box.setCustomValidity(""));
+        });
+    });
+    
+    const itemCheckboxes = document.querySelectorAll('input[name="item_ids"]');
+    itemCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function () {
+            itemCheckboxes.forEach(box => box.setCustomValidity(""));
+        });
+    });
+</script>
+<script>
+    function addOccasionField(value = "") {
+        const container = document.getElementById("occasion-fields");
+    
+        const row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.gap = "8px";
+        row.style.marginBottom = "8px";
+    
+        row.innerHTML = `
+            <input type="text" name="occasions" placeholder="Enter occasion" style="flex: 1;" value="${value}">
+            <button type="button"
+                    onclick="removeOccasionField(this)"
+                    style="
+                        width: 36px;
+                        height: 36px;
+                        border: none;
+                        border-radius: 50%;
+                        background: #8d6e63;
+                        color: #f8f6f3;
+                        cursor: pointer;
+                    ">
+                −
+            </button>
+        `;
+    
+        container.appendChild(row);
+    }
+    
+    function removeOccasionField(button) {
+        const container = document.getElementById("occasion-fields");
+        const rows = container.querySelectorAll("div");
+    
+        if (rows.length > 1) {
+            button.parentElement.remove();
+        } else {
+            const input = button.parentElement.querySelector('input[name="occasions"]');
+            if (input) input.value = "";
+        }
+    }
+</script>
 {% endblock %}
+
