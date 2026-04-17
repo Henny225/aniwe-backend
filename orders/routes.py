@@ -1,20 +1,23 @@
 from flask import Blueprint, render_template, session, redirect, request, jsonify
 import mysql.connector
 from utils import normalize_account_type
-
+from database import get_connection
 orders_bp = Blueprint('orders', __name__)
 
-DB_CONFIG = {
-    "host": "35.233.192.65",
-    "user": "aniwe_admin",
-    "password": "Aniwe2024!",
-    "database": "AniweDB"
-}
+# DB_CONFIG = {
+#     "host": "35.233.192.65",
+#     "user": "aniwe_admin",
+#     "password": "Aniwe2024!",
+#     "database": "AniweDB"
+# }
+
+# def get_db():
+#     config = DB_CONFIG.copy()
+#     config["connection_timeout"] = 10
+#     return mysql.connector.connect(**config)
 
 def get_db():
-    config = DB_CONFIG.copy()
-    config["connection_timeout"] = 10
-    return mysql.connector.connect(**config)
+    return get_connection()
 
 # ── helper: check login ────────────────────────────────────────
 def login_required():
