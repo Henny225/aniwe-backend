@@ -17,11 +17,21 @@
         .flash { padding: 12px 20px; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.85rem; }
         .flash-success { background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.3); color: #2e7d32; }
         .flash-error { background: rgba(244,67,54,0.1); border: 1px solid rgba(244,67,54,0.3); color: #c62828; }
-        .product-hero { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(212,196,176,0.3); border-radius: 12px; padding: 2.5rem; margin-bottom: 2rem; }
+        .product-hero { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(212,196,176,0.3); border-radius: 12px; overflow: hidden; margin-bottom: 2rem; display: grid; grid-template-columns: 380px 1fr; }
+        .product-hero-img { width: 100%; height: 100%; min-height: 420px; object-fit: cover; display: block; }
+        .product-hero-placeholder { width: 100%; min-height: 420px; background: linear-gradient(160deg, #ede7e0, #d4c4b0); display: flex; align-items: center; justify-content: center; }
+        .product-hero-placeholder span { font-size: 4rem; opacity: 0.35; }
+        .product-hero-body { padding: 2.5rem; }
         .product-hero h2 { font-family: Cormorant Garamond, serif; font-size: 2.2rem; font-weight: 400; margin-bottom: 0.3rem; }
         .product-hero .brand { font-size: 0.7rem; color: #8b7f7a; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; }
         .product-hero .price { font-family: Cormorant Garamond, serif; font-size: 2rem; font-weight: 500; margin-bottom: 1rem; }
+        .sizes-section { margin-bottom: 0.75rem; }
+        .sizes-label { font-size: 0.65rem; color: #8b7f7a; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.4rem; }
+        .sizes-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+        .size-tag { background: rgba(212,196,176,0.25); border: 1px solid rgba(212,196,176,0.5); padding: 5px 14px; border-radius: 50px; font-size: 0.78rem; letter-spacing: 1px; text-transform: uppercase; color: #2c2828; font-weight: 400; }
+        .subcategory-tag { display: inline-block; background: rgba(212,196,176,0.15); padding: 4px 14px; border-radius: 50px; font-size: 0.65rem; letter-spacing: 1.5px; text-transform: uppercase; color: #8b7f7a; margin-bottom: 1rem; }
         .product-hero .description { font-size: 0.9rem; line-height: 1.7; color: #555; margin-bottom: 1rem; }
+        @media (max-width: 640px) { .product-hero { grid-template-columns: 1fr; } .product-hero-img, .product-hero-placeholder { min-height: 260px; } }
         .meta { display: flex; gap: 8px; flex-wrap: wrap; }
         .tag { background: rgba(212,196,176,0.2); padding: 4px 12px; border-radius: 50px; font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; color: #8b7f7a; }
         .divider { width: 50px; height: 1px; background: #d4c4b0; margin: 2rem 0; }
@@ -59,16 +69,31 @@
         <a href="/products" class="back-link">&larr; Back to Products</a>
         {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="flash flash-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
         <div class="product-hero">
-            <h2>{{ product.name }}</h2>
-            <div class="brand">{{ product.brand_name }}</div>
-            <div class="price">${{ "%.2f"|format(product.price) }}</div>
-            {% if product.description %}<div class="description">{{ product.description }}</div>{% endif %}
-            <div class="meta">
-                <span class="tag">{{ product.category }}</span>
-                <span class="tag">{{ product.subcategory_name }}</span>
-                {% if product.tag %}<span class="tag">{{ product.tag }}</span>{% endif %}
-                {% for season in product.seasons %}<span class="tag">{{ season }}</span>{% endfor %}
-                {% for size in product.sizes %}<span class="tag">{{ size }}</span>{% endfor %}
+            {% if product.image_url %}
+            <img class="product-hero-img" src="{{ product.image_url }}" alt="{{ product.name }}">
+            {% else %}
+            <div class="product-hero-placeholder"><span>&#9675;</span></div>
+            {% endif %}
+            <div class="product-hero-body">
+                <h2>{{ product.name }}</h2>
+                <div class="brand">{{ product.brand_name }}</div>
+                <div class="price">${{ "%.2f"|format(product.price) }}</div>
+                {% if product.sizes %}
+                <div class="sizes-section">
+                    <div class="sizes-label">Size</div>
+                    <div class="sizes-pills">
+                        {% set size_order = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '2XL', '3XL'] %}
+                        {% for s in size_order if s in product.sizes %}<span class="size-tag">{{ s }}</span>{% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                {% if product.subcategory_name %}<span class="subcategory-tag">{{ product.subcategory_name }}</span>{% endif %}
+                {% if product.description %}<div class="description">{{ product.description }}</div>{% endif %}
+                <div class="meta">
+                    <span class="tag">{{ product.category }}</span>
+                    {% if product.tag %}<span class="tag">{{ product.tag }}</span>{% endif %}
+                    {% for season in product.seasons %}<span class="tag">{{ season }}</span>{% endfor %}
+                </div>
             </div>
         </div>
         <div class="divider"></div>
