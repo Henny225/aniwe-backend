@@ -59,6 +59,18 @@
                     <select name="subcategory_id" required><option value="">Select a category</option>{% for sub in subcategories %}<option value="{{ sub.subcategory_ID }}">{{ sub.category }} &mdash; {{ sub.subcategory_name }}</option>{% endfor %}</select>
                 </div>
                 <div class="form-group"><label>Tag</label><input type="text" name="tag" placeholder="e.g. evening, casual"></div>
+                
+                <!-- It's Togzhan's changes - needed for my STOCKS table -->
+                 <div class="form-group">
+                    <label>Stock Quantity <span class="required">*</span></label>
+                    <input type="number" name="stock_quantity" min="0" placeholder="e.g. 100" required>
+                </div>
+                <div class="form-group">
+                    <label>Restock Threshold</label>
+                    <input type="number" name="restock_threshold" min="0" placeholder="e.g. 10" value="10">
+                </div>
+                <!-- end of STOCKS changes -->
+                
                 <div class="form-group"><label>Seasons</label>
                     <div class="checkbox-group">
                         <label><input type="checkbox" name="seasons" value="Spring"> Spring</label>

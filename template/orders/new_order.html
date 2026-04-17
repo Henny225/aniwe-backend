@@ -10,30 +10,34 @@
         nav h1 { font-family: Cormorant Garamond, serif; font-size: 2.8rem; font-weight: 300; color: #1a1817; letter-spacing: 3px; }
         nav p { font-size: 0.75rem; color: #8b7f7a; letter-spacing: 4px; text-transform: uppercase; margin-top: 0.3rem; }
         .divider { width: 50px; height: 1px; background: #d4c4b0; margin: 2rem auto; }
-        .container { max-width: 520px; margin: 0 auto; padding: 0 24px 4rem; }
+        .container { max-width: 620px; margin: 0 auto; padding: 0 24px 4rem; }
         .nav-links { display: flex; gap: 12px; justify-content: center; margin-bottom: 2rem; }
         .nav-links a { font-size: 0.7rem; color: #8b7f7a; text-decoration: none; letter-spacing: 2px; text-transform: uppercase; transition: color 0.2s; }
         .nav-links a:hover { color: #1a1817; }
         .card { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(212,196,176,0.3); border-radius: 12px; padding: 2.5rem; }
         h2 { font-family: Cormorant Garamond, serif; font-size: 1.5rem; font-weight: 400; color: #1a1817; letter-spacing: 1px; margin-bottom: 2rem; text-align: center; }
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; font-size: 0.65rem; color: #8b7f7a; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.5rem; }
-        select, input { width: 100%; padding: 10px 14px; border: 1px solid rgba(212,196,176,0.5); border-radius: 8px; font-family: Inter, sans-serif; font-size: 0.85rem; font-weight: 300; color: #2c2828; background: rgba(255,255,255,0.8); outline: none; transition: border 0.2s; }
+        .item-row { display: grid; grid-template-columns: 1fr 80px 36px; gap: 10px; align-items: center; margin-bottom: 12px; }
+        label { display: block; font-size: 0.65rem; color: #8b7f7a; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.4rem; }
+        select, input[type="number"] { width: 100%; padding: 10px 14px; border: 1px solid rgba(212,196,176,0.5); border-radius: 8px; font-family: Inter, sans-serif; font-size: 0.85rem; font-weight: 300; color: #2c2828; background: rgba(255,255,255,0.8); outline: none; transition: border 0.2s; }
         select:focus, input:focus { border-color: #d4c4b0; }
-        .btn { width: 100%; background: #1a1817; color: #f8f6f3; padding: 12px; border: none; border-radius: 50px; font-family: Inter, sans-serif; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; margin-top: 0.5rem; }
-        .btn:hover { background: #3a3837; }
-        .btn-secondary { display: block; text-align: center; margin-top: 1rem; font-size: 0.7rem; color: #8b7f7a; text-decoration: none; letter-spacing: 1px; }
-        .btn-secondary:hover { color: #1a1817; }
+        .btn-remove { background: none; border: 1px solid rgba(212,196,176,0.5); border-radius: 8px; width: 36px; height: 40px; cursor: pointer; color: #8b7f7a; font-size: 1rem; transition: all 0.2s; margin-top: 20px; }
+        .btn-remove:hover { background: #f8d7da; border-color: #f5c2c7; color: #842029; }
+        .btn-add { background: none; border: 1px dashed rgba(212,196,176,0.8); border-radius: 8px; width: 100%; padding: 10px; cursor: pointer; color: #8b7f7a; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; transition: all 0.2s; margin: 8px 0 24px; }
+        .btn-add:hover { background: rgba(255,255,255,0.5); color: #1a1817; }
+        .divider-line { border: none; border-top: 1px solid rgba(212,196,176,0.3); margin: 1.5rem 0; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; font-size: 0.85rem; }
+        .total-amount { font-family: Cormorant Garamond, serif; font-size: 1.4rem; color: #1a1817; }
+        .btn-submit { width: 100%; background: #1a1817; color: #f8f6f3; padding: 12px; border: none; border-radius: 50px; font-family: Inter, sans-serif; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: all 0.3s ease; }
+        .btn-submit:hover { background: #3a3837; }
+        .btn-back { display: block; text-align: center; margin-top: 1rem; font-size: 0.7rem; color: #8b7f7a; text-decoration: none; letter-spacing: 1px; }
+        .btn-back:hover { color: #1a1817; }
         .error { background: #f8d7da; color: #842029; padding: 10px 14px; border-radius: 8px; font-size: 0.8rem; margin-bottom: 1.5rem; }
-        .product-info { background: rgba(212,196,176,0.15); border-radius: 8px; padding: 12px 14px; margin-top: 0.5rem; font-size: 0.8rem; color: #8b7f7a; display: none; }
+        .col-label { font-size: 0.65rem; color: #8b7f7a; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
         footer { text-align: center; padding: 2rem 0 3rem; font-size: 0.7rem; color: #8b7f7a; letter-spacing: 2px; }
     </style>
 </head>
 <body>
-    <nav>
-        <a href="/" style="text-decoration:none;color:inherit;"><h1>aniwe</h1></a>
-        <p>Place Order</p>
-    </nav>
+    <nav><h1>aniwe</h1><p>Place Order</p></nav>
     <div class="divider"></div>
 
     <div class="container">
@@ -46,35 +50,45 @@
         <div class="card">
             <h2>New Order</h2>
 
-            {% if error %}
-            <div class="error">{{ error }}</div>
-            {% endif %}
+            {% if error %}<div class="error">{{ error }}</div>{% endif %}
 
-            <form method="POST">
-                <div class="form-group">
-                    <label>Select Product</label>
-                    <select name="product_id" id="productSelect" onchange="showProductInfo()" required>
-                        <option value="">— Choose a product —</option>
-                        {% for p in products %}
-                        <option value="{{ p.product_ID }}"
-                                data-price="{{ p.price }}"
-                                data-name="{{ p.name }}">
-                            {{ p.name }} — ${{ "%.2f"|format(p.price) }}
-                        </option>
-                        {% endfor %}
-                    </select>
-                    <div class="product-info" id="productInfo">
-                        <span id="productName"></span> — <strong id="productPrice"></strong>
+            <form method="POST" id="orderForm">
+                <!-- Column headers -->
+                <div class="item-row">
+                    <div class="col-label">Product</div>
+                    <div class="col-label">Qty</div>
+                    <div></div>
+                </div>
+
+                <!-- Item rows container -->
+                <div id="itemsContainer">
+                    <div class="item-row">
+                        <select name="product_id[]" required>
+                            <option value="">— Select product —</option>
+                            {% for p in products %}
+                            <option value="{{ p.product_ID }}" data-price="{{ p.price }}">
+                                {{ p.name }} — ${{ "%.2f"|format(p.price) }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <input type="number" name="quantity[]" min="1" value="1" required>
+                        <button type="button" class="btn-remove" onclick="removeRow(this)">×</button>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Quantity</label>
-                    <input type="number" name="quantity" min="1" value="1" required>
+                <!-- Add item button -->
+                <button type="button" class="btn-add" onclick="addRow()">+ Add another item</button>
+
+                <hr class="divider-line">
+
+                <!-- Estimated total -->
+                <div class="total-row">
+                    <span>Estimated Total</span>
+                    <span class="total-amount" id="estimatedTotal">$0.00</span>
                 </div>
 
-                <button type="submit" class="btn">Place Order</button>
-                <a href="/orders" class="btn-secondary">← Back to Orders</a>
+                <button type="submit" class="btn-submit">Place Order</button>
+                <a href="/orders" class="btn-back">← Back to Orders</a>
             </form>
         </div>
     </div>
@@ -82,18 +96,53 @@
     <footer>aniwe &mdash; AI-Powered Fashion Stylist</footer>
 
     <script>
-        function showProductInfo() {
-            var select = document.getElementById('productSelect');
-            var info = document.getElementById('productInfo');
-            var option = select.options[select.selectedIndex];
-            if (option.value) {
-                document.getElementById('productName').textContent = option.dataset.name;
-                document.getElementById('productPrice').textContent = '$' + option.dataset.price;
-                info.style.display = 'block';
-            } else {
-                info.style.display = 'none';
+        // Products data from Flask
+        var products = [
+            {% for p in products %}
+            { id: "{{ p.product_ID }}", price: {{ p.price }} },
+            {% endfor %}
+        ];
+
+        // Add a new item row
+        function addRow() {
+            var container = document.getElementById('itemsContainer');
+            var firstRow = container.querySelector('.item-row');
+            var newRow = firstRow.cloneNode(true);
+            // Reset values in the new row
+            newRow.querySelector('select').value = '';
+            newRow.querySelector('input').value = 1;
+            container.appendChild(newRow);
+            updateTotal();
+        }
+
+        // Remove an item row (keep at least one)
+        function removeRow(btn) {
+            var container = document.getElementById('itemsContainer');
+            if (container.querySelectorAll('.item-row').length > 1) {
+                btn.closest('.item-row').remove();
+                updateTotal();
             }
         }
+
+        // Calculate estimated total
+        function updateTotal() {
+            var rows = document.querySelectorAll('#itemsContainer .item-row');
+            var total = 0;
+            rows.forEach(function(row) {
+                var select = row.querySelector('select');
+                var qty = parseInt(row.querySelector('input').value) || 0;
+                if (select.value) {
+                    var option = select.options[select.selectedIndex];
+                    var price = parseFloat(option.dataset.price) || 0;
+                    total += price * qty;
+                }
+            });
+            document.getElementById('estimatedTotal').textContent = '$' + total.toFixed(2);
+        }
+
+        // Listen for changes
+        document.getElementById('itemsContainer').addEventListener('change', updateTotal);
+        document.getElementById('itemsContainer').addEventListener('input', updateTotal);
     </script>
 </body>
 </html>

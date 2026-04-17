@@ -169,6 +169,16 @@ def add_product():
             cursor.execute("INSERT INTO PRODUCT_SEASON (product_ID, season) VALUES (%s, %s)", (product_id, season))
         for size in sizes:
             cursor.execute("INSERT INTO PRODUCT_SIZE (product_ID, size) VALUES (%s, %s)", (product_id, size))
+        
+        # Togzhan's changes - necessary for STOCKS table 
+        stock_quantity = int(request.form.get("stock_quantity", 0))
+        restock_threshold = int(request.form.get("restock_threshold", 10))
+        cursor.execute("""
+            INSERT INTO STOCKS (retailer_id, product_id, stock_quantity, restock_threshold)
+            VALUES (%s, %s, %s, %s)
+        """, (int(retailer_id), product_id, stock_quantity, restock_threshold))
+        # end of STOCKS table
+        
         conn.commit()
         cursor.close()
         conn.close()
