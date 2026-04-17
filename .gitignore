@@ -138,3 +138,6 @@ Thumbs.db
 
 # Application specific
 *.db
+
+__pycache__/
+*.pyc
