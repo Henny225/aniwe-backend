@@ -285,3 +285,67 @@ BEGIN
     RETURN avg_rating;
 END //
 DELIMITER ;
+
+DROP TRIGGER IF EXISTS trg_stocks_decrement;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_order_total_insert
+AFTER INSERT ON ORDER_ITEM
+FOR EACH ROW
+BEGIN
+    UPDATE `ORDER`
+    SET total_amount = (
+        SELECT SUM(quantity * unit_price)
+        FROM ORDER_ITEM
+        WHERE order_id = NEW.order_id
+    )
+    WHERE order_id = NEW.order_id;
+END$$
+
+CREATE TRIGGER trg_order_total_update
+AFTER UPDATE ON ORDER_ITEM
+FOR EACH ROW
+BEGIN
+    UPDATE `ORDER`
+    SET total_amount = (
+        SELECT SUM(quantity * unit_price)
+        FROM ORDER_ITEM
+        WHERE order_id = NEW.order_id
+    )
+    WHERE order_id = NEW.order_id;
+END$$
+
+CREATE TRIGGER trg_stocks_decrement
+AFTER INSERT ON ORDER_ITEM
+FOR EACH ROW
+BEGIN
+    UPDATE STOCKS s
+    JOIN `ORDER` o ON o.order_id = NEW.order_id
+    JOIN PRODUCT p ON p.product_id = NEW.product_id
+    SET s.stock_quantity = s.stock_quantity - NEW.quantity,
+        s.last_updated = CURRENT_TIMESTAMP
+    WHERE s.retailer_id = p.retailer_id
+      AND s.product_id = NEW.product_id
+      AND s.stock_quantity >= NEW.quantity;
+END$$
+
+DELIMITER ;
+
+SHOW TRIGGERS;
+
+
+CREATE OR REPLACE VIEW vw_low_stock_alerts AS
+SELECT
+    s.retailer_id,
+    rp.brand_name,
+    s.product_id,
+    p.name AS product_name,
+    s.stock_quantity,
+    s.restock_threshold,
+    s.last_updated
+FROM STOCKS s
+JOIN RETAIL_PARTNER rp ON rp.retailer_id = s.retailer_id
+JOIN PRODUCT p ON p.product_id = s.product_id
+WHERE s.stock_quantity <= s.restock_threshold
+ORDER BY s.stock_quantity ASC;

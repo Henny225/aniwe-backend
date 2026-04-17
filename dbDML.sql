@@ -62,6 +62,110 @@ INSERT INTO SUBCATEGORY (subcategory_ID, subcategory_name, category) VALUES
 (12, 'Jewelry', 'Accessories'),
 (13, 'Bags', 'Accessories');
 
+-- Populate the CLOTHING_ITEM Table
+INSERT INTO CLOTHING_ITEM (item_ID, consumer_ID, subcategory_ID, item_name, brand, size, purchase_price, image_url, status, tag) VALUES
+(1, 5, 4, 'Wide leg jeans', 'Levis', '31', 50.50, 'www.aws.com/jeans.png', 'Laundry', 'Basic'),
+(2, 1, 1, 'White tshirt', 'Uniqlo', 'small', 19.90, 'www.aws.com/whitetshirt.png', 'Dirty', 'Basic'),
+(3, 1, 9, 'Black going out mini dress', 'Zara', 'small', 35.00, 'www.aws.com/blackminidress.png', 'Active', 'Edgy'),
+(4, 1, 7, 'Black blazer', 'Zara', 'small', 69.90, 'www.aws.com/blackblazer.png', 'Active', 'Chic'),
+(5, 3, 9, 'Floral maxi dress', 'Anthropologie', '8', 84.00, 'www.aws.com/floralmaxidress.png', 'Active', 'Boho'),
+(6, 5, 8, 'Gray puffer coat', 'Aritzia', 'large', 157.50, 'www.aws.com/graypuffercoat.png', 'Active', 'Basic'),
+(7, 5, 3, 'Gray cable knit sweater', 'J.Crew', 'large', 64.00, 'www.aws.com/graycableknitsweater.png', 'Active', 'Classic'),
+(8, 1, 6, 'Black pleated midi skirt', 'Aritzia', '4', 60.00, 'www.aws.com/blackpleatedmidiskirt.png', 'Active', 'Elegant'),
+(9, 1, 2, 'White long sleeve tie neck blouse', 'Ann Taylor', 'small', 35.00, 'www.aws.com/whitetieneckblouse.png', 'Active', 'Formal'),
+(10, 3, 9, 'Blue short sleeve dress', 'Old Navy', '6', 24.50, 'www.aws.com/blueshortsleevedress.png', 'Active', 'Casual'),
+(11, 1, 5, 'Black tailored trousers', 'Gap', '4', 39.50, 'www.aws.com/blacktrousers.png', 'Active', 'Formal'),
+(12, 1, 10, 'White sneakers', 'Adidas', '7', 44.50, 'www.aws.com/whitesneakers.png', 'Active', 'Sporty'),
+(13, 1, 11, 'Black low heel sandals', 'Sam Edelman', '7', 95.00, 'www.aws.com/blacksandals.png', 'Active', 'Chic'),
+(14, 3, 12, 'Gold chain necklace', 'Mejuri', 'OS', 150.00, 'www.aws.com/goldchainnecklace.png', 'Active', 'Classic'),
+(15, 5, 12, 'Black leather shoulder bag', 'Coach', 'OS', 225.00, 'www.aws.com/blackshoulderbag.png', 'Active', 'Minimal'),
+(16, 3, 7, 'Black leather jacket', 'All Saints', 'medium', 549.00, 'www.aws.com/blackleatherjacket.png', 'Active', 'Edgy'),
+(17, 3, 11, 'Red strappy sandals', 'Madewell', '8', 55.00, 'www.aws.com/redsandals.png', 'Active', 'Casual'),
+(18, 5, 10, 'Gray sneakers', 'New Balance', '8', 105.00, 'www.aws.com/graysneakers.png', 'Active', 'Sporty');
+
+-- Populate the CLOTHING_ITEM_COLOUR Table
+INSERT INTO CLOTHING_ITEM_COLOUR (item_ID, colour) VALUES
+(1, 'Blue'),
+(2, 'White'),
+(3, 'Black'),
+(4, 'Black'),
+(5, 'Red'),
+(5, 'Pink'),
+(6, 'Gray'),
+(7, 'Gray'),
+(8, 'Black'),
+(9, 'White'),
+(10, 'Blue'),
+(11, 'Black'),
+(12, 'White'),
+(13, 'Black'),
+(14, 'Gold'),
+(15, 'Black'),
+(16, 'Black'),
+(17, 'Red'),
+(18, 'Gray');
+
+-- Populate the OUTFIT Table
+INSERT INTO OUTFIT (outfit_ID, consumer_ID, outfit_name, created_at, is_public, times_worn) VALUES
+(1,  1, 'Minimalist Monochrome',      '2026-04-01 12:00:00', TRUE,  4),
+(2,  1, 'Chic Office Look',           '2026-04-02 14:00:00', TRUE,  2),
+(3,  1, 'All-Black Night Out',        '2026-04-01 18:00:00', FALSE, 1),
+(4,  2, 'Sporty Weekend Brunch',      '2026-04-02 10:00:00', TRUE,  3),
+(5,  2, 'Casual Streetwear Fit',      '2025-10-20 08:00:00', FALSE, 5),
+(6,  3, 'Boho-Chic Summer Day',       '2025-09-01 09:00:00', TRUE,  2),
+(7,  3, 'Eclectic Garden Party',      '2025-10-15 11:00:00', TRUE,  1),
+(8,  4, 'Formal Monochrome Set',      '2026-03-30 16:00:00', TRUE,  3),
+(9,  4, 'Chic Dinner Look',           '2025-11-01 07:30:00', FALSE, 6),
+(10, 5, 'Androgynous Winter Layers',  '2025-11-15 13:00:00', TRUE,  2);
+
+-- Populate the OUTFIT_OCCASION Table
+INSERT INTO OUTFIT_OCCASION (outfit_ID, occasion) VALUES
+(1,  'casual hangout'),
+(1,  'coffee run'),
+(2,  'work'),
+(2,  'happy hour'),
+(3,  'date night'),
+(4,  'brunch'),
+(5,  'streetwear meetup'),
+(6,  'festival'),
+(6,  'vacation'),
+(7,  'garden party'),
+(7, 'wedding guest'),
+(8, 'wedding guest');
+
+-- Populate the OUTFIT_SEASON Table
+INSERT INTO OUTFIT_SEASON (outfit_ID, season) VALUES
+(1,  'fall'),
+(1,  'spring'),
+(2,  'fall'),
+(2,  'winter'),
+(2,  'spring'),
+(3,  'winter'),
+(4,  'spring'),
+(5,  'fall'),
+(5,  'winter'),
+(6,  'summer'),
+(8,  'winter');
+
+-- Populate the CONSISTS_OF Table
+INSERT INTO CONSISTS_OF (outfit_ID, item_ID) VALUES
+(1, 4),
+(1, 11),
+(1, 12),
+(2, 8),
+(2, 9),
+(2, 13),
+(6, 5),
+(6, 14),
+(6, 17),
+(7, 10),
+(7, 16),
+(10, 6),
+(10, 7),
+(10, 1),
+(10, 18);
+
+
 UPDATE USER SET password_hash = SHA2('hash123', 256) WHERE user_id = 1;
 UPDATE USER SET password_hash = SHA2('hash456', 256) WHERE user_id = 2;
 UPDATE USER SET password_hash = SHA2('hash789', 256) WHERE user_id = 3;
