@@ -160,6 +160,7 @@ CREATE TABLE PRODUCT (
     description TEXT,
     price DECIMAL(10,2) NOT NULL,
     tag VARCHAR(100),
+    image_url VARCHAR(255),
     FOREIGN KEY (retailer_ID) REFERENCES RETAIL_PARTNER(retailer_ID) ON DELETE CASCADE,
     FOREIGN KEY (subcategory_ID) REFERENCES SUBCATEGORY(subcategory_ID) ON DELETE SET NULL
 );

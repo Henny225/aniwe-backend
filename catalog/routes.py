@@ -148,6 +148,7 @@ def add_product():
         description = request.form.get("description", "").strip()
         price = request.form.get("price", "").strip()
         tag = request.form.get("tag", "").strip()
+        image_url = request.form.get("image_url", "").strip() or None
         subcategory_id = request.form.get("subcategory_id", "").strip()
         seasons = request.form.getlist("seasons")
         sizes = request.form.getlist("sizes")
@@ -163,7 +164,7 @@ def add_product():
 
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("INSERT INTO PRODUCT (retailer_ID, subcategory_ID, name, description, price, tag) VALUES (%s, %s, %s, %s, %s, %s)", (int(retailer_id), int(subcategory_id), name, description, float(price), tag))
+        cursor.execute("INSERT INTO PRODUCT (retailer_ID, subcategory_ID, name, description, price, tag, image_url) VALUES (%s, %s, %s, %s, %s, %s, %s)", (int(retailer_id), int(subcategory_id), name, description, float(price), tag, image_url))
         product_id = cursor.lastrowid
         for season in seasons:
             cursor.execute("INSERT INTO PRODUCT_SEASON (product_ID, season) VALUES (%s, %s)", (product_id, season))

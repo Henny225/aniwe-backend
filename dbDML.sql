@@ -177,4 +177,35 @@ SELECT p.retailer_ID, ps.product_ID, ps.size, 30, 5
 FROM PRODUCT_SIZE ps
 JOIN PRODUCT p ON p.product_ID = ps.product_ID
 WHERE p.retailer_ID IN (6, 7, 8);
+
+-- ============================================================
+-- PRODUCT IMAGES (Unsplash — free, no attribution required)
+-- ============================================================
+-- Velvet Vibe Designs (retailer_ID = 6)
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80' WHERE name = 'Satin Evening Gown';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80' WHERE name = 'Lace Cocktail Dress';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80' WHERE name = 'Silk Wrap Blouse';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=600&q=80' WHERE name = 'Cashmere Wrap Coat';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1544441893-675973e31985?w=600&q=80' WHERE name = 'Velvet Blazer';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80' WHERE name = 'Structured Leather Tote';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1584464491033-06628f3a6b7b?w=600&q=80' WHERE name = 'Pearl Drop Earrings';
+
+-- Urban Threads Co. (retailer_ID = 7)
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1523381294911-8d3cead13475?w=600&q=80' WHERE name = 'Graphic Oversized Tee';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1542060748-10c28b62716f?w=600&q=80' WHERE name = 'High-Rise Skinny Jeans';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600&q=80' WHERE name = 'Wide-Leg Cargo Pants';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1551232864-3f0890e580d9?w=600&q=80' WHERE name = 'Denim Bomber Jacket';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1604176354204-9268737828e4?w=600&q=80' WHERE name = 'Ribbed Turtleneck Sweater';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1614676471928-2ed0ad1061a4?w=600&q=80' WHERE name = 'Pleated Mini Skirt';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=600&q=80' WHERE name = 'Platform Chunky Sneakers';
+
+-- Starlit Style Collective (retailer_ID = 8)
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=80' WHERE name = 'Organic Cotton Tee';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1562157873-818bc0726f68?w=600&q=80' WHERE name = 'Recycled Fleece Pullover';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1608228088998-57828365d486?w=600&q=80' WHERE name = 'Yoga Wide-Leg Pants';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=600&q=80' WHERE name = 'Bamboo Lounge Dress';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1571513722275-4b41940f54b8?w=600&q=80' WHERE name = 'Low-Top Canvas Sneakers';
+UPDATE PRODUCT SET image_url = 'https://images.unsplash.com/photo-1583744946564-b52ac1c389c8?w=600&q=80' WHERE name = 'Woven Crossbody Bag';
+
+
 COMMIT;
