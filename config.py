@@ -24,7 +24,7 @@ class Config:
             'PORT': 8080,
             'MYSQL_HOST': 'localhost',
             'MYSQL_USER': 'root',
-            'MYSQL_PASSWORD': 'admin123',
+            'MYSQL_PASSWORD': ' ',
             'MYSQL_DB': 'AniweDB',
             'MYSQL_PORT': 3306,
         },

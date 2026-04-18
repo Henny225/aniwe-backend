@@ -276,14 +276,27 @@ def create_outfit():
         (consumer_id,)
     ) or []
 
+    outfit_form_data = None
+    
     if request.method == 'POST':
         outfit_name = request.form.get('outfit_name', '').strip()
-        occasion = request.form.get('occasion', '').strip()
-        season = request.form.get('season', '').strip()
+        occasions = [o.strip() for o in request.form.getlist('occasions') if o.strip()]
+        selected_seasons = request.form.getlist('seasons')
         selected_items = request.form.getlist('item_ids')
 
-        if not outfit_name or not occasion or not season:
+        outfit_form_data = {
+            'outfit_name': outfit_name,
+            'occasions': occasions,
+            'selected_seasons': selected_seasons,
+            'selected_item_ids': [int(item_id) for item_id in selected_items] if selected_items else []
+        }
+
+        if not outfit_name:
             error = "Please fill in all fields"
+        elif not occasions:
+            error = "Please add at least one occasion"
+        elif not selected_seasons:
+            error = "Please select at least one season"
         elif not selected_items:
             error = "Please select at least one item"
         else:
@@ -310,16 +323,18 @@ def create_outfit():
 
                 if newest_outfit:
                     outfit_id = newest_outfit[0]['outfit_ID']
+                    
+                    for occasion in occasions:
+                        execute_insert_update(
+                            "INSERT INTO OUTFIT_OCCASION (outfit_ID, occasion) VALUES (%s, %s)",
+                            (outfit_id, occasion)
+                        )
 
-                    execute_insert_update(
-                        "INSERT INTO OUTFIT_OCCASION (outfit_ID, occasion) VALUES (%s, %s)",
-                        (outfit_id, occasion)
-                    )
-
-                    execute_insert_update(
-                        "INSERT INTO OUTFIT_SEASON (outfit_ID, season) VALUES (%s, %s)",
-                        (outfit_id, season)
-                    )
+                    for season in selected_seasons:
+                        execute_insert_update(
+                            "INSERT INTO OUTFIT_SEASON (outfit_ID, season) VALUES (%s, %s)",
+                            (outfit_id, season)
+                        )
 
                     for item_id in selected_items:
                         execute_insert_update(
@@ -335,7 +350,7 @@ def create_outfit():
     'create_outfit.html',
     clothing_items=clothing_items,
     error=error,
-    outfit=None,
+    outfit=outfit_form_data,
     is_edit=False
     )
 
@@ -360,13 +375,14 @@ def edit_outfit(outfit_id):
         SELECT
             o.outfit_ID,
             o.outfit_name,
+            o.times_worn,
             GROUP_CONCAT(DISTINCT oc.occasion ORDER BY oc.occasion SEPARATOR ', ') AS occasions,
             GROUP_CONCAT(DISTINCT os.season ORDER BY os.season SEPARATOR ', ') AS seasons
         FROM OUTFIT o
         LEFT JOIN OUTFIT_OCCASION oc ON oc.outfit_ID = o.outfit_ID
         LEFT JOIN OUTFIT_SEASON os ON os.outfit_ID = o.outfit_ID
         WHERE o.outfit_ID = %s AND o.consumer_ID = %s
-        GROUP BY o.outfit_ID, o.outfit_name
+        GROUP BY o.outfit_ID, o.outfit_name, o.times_worn
         """,
         (outfit_id, consumer_id)
     )
@@ -387,24 +403,58 @@ def edit_outfit(outfit_id):
 
     selected_item_ids = [row['item_ID'] for row in selected_item_rows]
 
+    selected_seasons = []
+    if outfit['seasons']:
+        selected_seasons = [s.strip() for s in outfit['seasons'].split(',')]
+
+    existing_occasions = []
+    if outfit['occasions']:
+        existing_occasions = [o.strip() for o in outfit['occasions'].split(',')]
+
+    outfit_form_data = {
+        'outfit_ID': outfit['outfit_ID'],
+        'outfit_name': outfit['outfit_name'],
+        'times_worn': outfit['times_worn'],
+        'occasions': existing_occasions,
+        'selected_seasons': selected_seasons,
+        'selected_item_ids': selected_item_ids
+    }
+
     if request.method == 'POST':
         outfit_name = request.form.get('outfit_name', '').strip()
-        occasion = request.form.get('occasion', '').strip()
-        season = request.form.get('season', '').strip()
+        occasions = [o.strip() for o in request.form.getlist('occasions') if o.strip()]
+        selected_seasons = request.form.getlist('seasons')
         selected_items = request.form.getlist('item_ids')
+        times_worn = request.form.get('times_worn', '0').strip()
 
-        if not outfit_name or not occasion or not season:
+        outfit_form_data = {
+            'outfit_ID': outfit_id,
+            'outfit_name': outfit_name,
+            'times_worn': times_worn,
+            'occasions': occasions,
+            'selected_seasons': selected_seasons,
+            'selected_item_ids': [int(item_id) for item_id in selected_items] if selected_items else []
+        }
+
+        if not outfit_name:
             error = "Please fill in all fields"
+        elif not times_worn.isdigit():
+            error = "Times worn must be a non-negative number"
+        elif not occasions:
+            error = "Please add at least one occasion"
+        elif not selected_seasons:
+            error = "Please select at least one season"
         elif not selected_items:
             error = "Please select at least one item"
         else:
             success = execute_insert_update(
                 """
                 UPDATE OUTFIT
-                SET outfit_name = %s
+                SET outfit_name = %s, 
+                    times_worn = %s
                 WHERE outfit_ID = %s AND consumer_ID = %s
                 """,
-                (outfit_name, outfit_id, consumer_id)
+                (outfit_name, times_worn, outfit_id, consumer_id)
             )
 
             if success:
@@ -420,16 +470,18 @@ def edit_outfit(outfit_id):
                     "DELETE FROM CONSISTS_OF WHERE outfit_ID = %s",
                     (outfit_id,)
                 )
+                
+                for occasion in occasions:
+                    execute_insert_update(
+                        "INSERT INTO OUTFIT_OCCASION (outfit_ID, occasion) VALUES (%s, %s)",
+                        (outfit_id, occasion)
+                    )
 
-                execute_insert_update(
-                    "INSERT INTO OUTFIT_OCCASION (outfit_ID, occasion) VALUES (%s, %s)",
-                    (outfit_id, occasion)
-                )
-
-                execute_insert_update(
-                    "INSERT INTO OUTFIT_SEASON (outfit_ID, season) VALUES (%s, %s)",
-                    (outfit_id, season)
-                )
+                for season in selected_seasons:
+                    execute_insert_update(
+                        "INSERT INTO OUTFIT_SEASON (outfit_ID, season) VALUES (%s, %s)",
+                        (outfit_id, season)
+                    )
 
                 for item_id in selected_items:
                     execute_insert_update(
@@ -441,13 +493,6 @@ def edit_outfit(outfit_id):
             else:
                 error = "Error updating outfit"
 
-    outfit_form_data = {
-        'outfit_ID': outfit['outfit_ID'],
-        'outfit_name': outfit['outfit_name'],
-        'occasion': outfit['occasions'] or '',
-        'season': outfit['seasons'] or '',
-        'selected_item_ids': selected_item_ids
-    }
 
     return render_template(
         'create_outfit.html',
