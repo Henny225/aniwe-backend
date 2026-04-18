@@ -32,7 +32,24 @@
         tr:last-child td { border-bottom: none; }
         .badge { display: inline-block; padding: 3px 10px; border-radius: 50px; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; background: #f0ece6; color: #8b7f7a; }
         footer { text-align: center; padding: 2rem 0 3rem; font-size: 0.7rem; color: #8b7f7a; letter-spacing: 2px; }
-    </style>
+/* comment */
+        .card {
+            overflow-x: auto;  /* скролл если таблица не влезает */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;  /* фиксированная ширина колонок */
+        }
+
+        td, th {
+            word-wrap: break-word;     /* перенос длинных слов */
+            overflow: hidden;
+            text-overflow: ellipsis;   /* ... если текст не влезает */
+            max-width: 150px;
+        }
+   </style>
 </head>
 <body>
     <nav>

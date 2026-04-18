@@ -5,17 +5,21 @@ from database import get_connection
 
 orders_bp = Blueprint('orders', __name__)
 
-DB_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "admin123",
-    "database": "AniweDB"
-}
-
 def get_db():
-    config = DB_CONFIG.copy()
-    config["connection_timeout"] = 10
-    return mysql.connector.connect(**config)
+    return get_connection()
+
+
+# DB_CONFIG = {
+#     "host": "localhost",
+#     "user": "root",
+#     "password": "",
+#     "database": "AniweDB"
+# }
+
+# def get_db():
+#     config = DB_CONFIG.copy()
+#     config["connection_timeout"] = 10
+#     return mysql.connector.connect(**config)
 
 # ── helper: check login ────────────────────────────────────────
 def login_required():
