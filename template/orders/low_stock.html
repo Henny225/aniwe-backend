@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>aniwe — Low Stock</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Inter, sans-serif; background: linear-gradient(135deg, #f8f6f3 0%, #ede7e0 100%); color: #2c2828; min-height: 100vh; font-weight: 300; }
+        nav { text-align: center; padding: 3rem 0 1rem; }
+        nav h1 { font-family: Cormorant Garamond, serif; font-size: 2.8rem; font-weight: 300; color: #1a1817; letter-spacing: 3px; }
+        nav p { font-size: 0.75rem; color: #8b7f7a; letter-spacing: 4px; text-transform: uppercase; margin-top: 0.3rem; }
+        .divider { width: 50px; height: 1px; background: #d4c4b0; margin: 2rem auto; }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px 4rem; }
+        .nav-links { display: flex; gap: 12px; justify-content: center; margin-bottom: 2rem; }
+        .nav-links a { font-size: 0.7rem; color: #8b7f7a; text-decoration: none; letter-spacing: 2px; text-transform: uppercase; }
+        .nav-links a:hover { color: #1a1817; }
+        .card { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(212,196,176,0.3); border-radius: 12px; padding: 2rem; }
+        h2 { font-family: Cormorant Garamond, serif; font-size: 1.5rem; font-weight: 400; color: #1a1817; margin-bottom: 1.5rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 8px 12px; font-size: 0.6rem; color: #8b7f7a; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid rgba(212,196,176,0.3); }
+        td { padding: 10px 12px; font-size: 0.85rem; border-bottom: 1px solid rgba(212,196,176,0.15); }
+        tr:last-child td { border-bottom: none; }
+        .critical { color: #842029; font-weight: 500; }
+        .warning { color: #856404; }
+        .empty { text-align: center; padding: 3rem; color: #8b7f7a; font-style: italic; }
+        footer { text-align: center; padding: 2rem 0 3rem; font-size: 0.7rem; color: #8b7f7a; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <h1>aniwe</h1>
+        <p>Low Stock Alerts</p>
+    </nav>
+    <div class="divider"></div>
+    <div class="container">
+        <div class="nav-links">
+            <a href="/">Dashboard</a>
+            <a href="/orders">Orders</a>
+            <a href="/profile">Profile</a>
+            <a href="/low-stock">Low Stock</a>
+        </div>
+        <div class="card">
+            <h2>Low Stock Alerts</h2>
+            {% if items %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Brand</th>
+                        <th>Stock</th>
+                        <th>Threshold</th>
+                        <th>Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.product_name }}</td>
+                        <td>{{ item.brand_name }}</td>
+                        <td class="{% if item.stock_quantity <= item.restock_threshold %}critical{% else %}warning{% endif %}">
+                            {{ item.stock_quantity }}
+                        </td>
+                        <td>{{ item.restock_threshold }}</td>
+                        <td>{{ item.last_updated }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty">All products are well stocked!</div>
+            {% endif %}
+        </div>
+    </div>
+    <footer>aniwe &mdash; AI-Powered Fashion Stylist</footer>
+</body>
+</html>

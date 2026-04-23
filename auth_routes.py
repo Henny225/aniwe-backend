@@ -71,7 +71,7 @@ def register_web_auth_routes(app):
                 )
 
                 if not user:
-                    error = "Invalid email or password"
+                    error = "No such account found or exists"
                 elif user['account_status'] != 'Active':
                     error = f"Account is {user['account_status']}"
                 elif not verify_password(password, user['password_hash']):

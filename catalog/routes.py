@@ -148,6 +148,7 @@ def add_product():
         description = request.form.get("description", "").strip()
         price = request.form.get("price", "").strip()
         tag = request.form.get("tag", "").strip()
+        image_url = request.form.get("image_url", "").strip() or None
         subcategory_id = request.form.get("subcategory_id", "").strip()
         seasons = request.form.getlist("seasons")
         sizes = request.form.getlist("sizes")
@@ -163,12 +164,22 @@ def add_product():
 
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("INSERT INTO PRODUCT (retailer_ID, subcategory_ID, name, description, price, tag) VALUES (%s, %s, %s, %s, %s, %s)", (int(retailer_id), int(subcategory_id), name, description, float(price), tag))
+        cursor.execute("INSERT INTO PRODUCT (retailer_ID, subcategory_ID, name, description, price, tag, image_url) VALUES (%s, %s, %s, %s, %s, %s, %s)", (int(retailer_id), int(subcategory_id), name, description, float(price), tag, image_url))
         product_id = cursor.lastrowid
         for season in seasons:
             cursor.execute("INSERT INTO PRODUCT_SEASON (product_ID, season) VALUES (%s, %s)", (product_id, season))
         for size in sizes:
             cursor.execute("INSERT INTO PRODUCT_SIZE (product_ID, size) VALUES (%s, %s)", (product_id, size))
+        
+        # Togzhan's changes - necessary for STOCKS table 
+        stock_quantity = int(request.form.get("stock_quantity", 0))
+        restock_threshold = int(request.form.get("restock_threshold", 10))
+        cursor.execute("""
+            INSERT INTO STOCKS (retailer_id, product_id, stock_quantity, restock_threshold)
+            VALUES (%s, %s, %s, %s)
+        """, (int(retailer_id), product_id, stock_quantity, restock_threshold))
+        # end of STOCKS table
+        
         conn.commit()
         cursor.close()
         conn.close()

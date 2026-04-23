@@ -1,39 +1,204 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>aniwe — Add Product</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap"
+        rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Inter, sans-serif; background: linear-gradient(135deg, #f8f6f3 0%, #ede7e0 100%); color: #2c2828; min-height: 100vh; font-weight: 300; }
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 3rem; border-bottom: 1px solid rgba(212,196,176,0.3); }
-        nav h1 { font-family: Cormorant Garamond, serif; font-size: 1.8rem; font-weight: 300; letter-spacing: 2px; }
-        nav .nav-links { display: flex; gap: 20px; align-items: center; }
-        nav a { color: #2c2828; text-decoration: none; font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; }
-        .user-badge { background: #1a1817; color: #f8f6f3; padding: 6px 16px; border-radius: 50px; font-size: 0.65rem; letter-spacing: 1px; text-transform: uppercase; }
-        .container { max-width: 600px; margin: 2rem auto; padding: 0 24px; }
-        .back-link { font-size: 0.75rem; color: #8b7f7a; text-decoration: none; letter-spacing: 1px; text-transform: uppercase; display: inline-block; margin-bottom: 1.5rem; }
-        .flash { padding: 12px 20px; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.85rem; }
-        .flash-error { background: rgba(244,67,54,0.1); border: 1px solid rgba(244,67,54,0.3); color: #c62828; }
-        .form-card { background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); border: 1px solid rgba(212,196,176,0.3); border-radius: 12px; padding: 2.5rem; }
-        .form-card h2 { font-family: Cormorant Garamond, serif; font-size: 1.8rem; font-weight: 400; margin-bottom: 1.5rem; }
-        .form-group { margin-bottom: 1.2rem; }
-        .form-group label { display: block; font-size: 0.65rem; color: #8b7f7a; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.5rem; }
-        input[type="text"], input[type="number"], textarea, select { width: 100%; padding: 12px 16px; border: 1px solid rgba(212,196,176,0.3); border-radius: 8px; font-family: Inter, sans-serif; font-size: 0.85rem; background: rgba(255,255,255,0.5); }
-        textarea { resize: vertical; min-height: 80px; }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: #d4c4b0; }
-        .checkbox-group { display: flex; gap: 16px; flex-wrap: wrap; }
-        .checkbox-group label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; text-transform: none; letter-spacing: 0; cursor: pointer; }
-        .checkbox-group input[type="checkbox"] { width: auto; accent-color: #1a1817; }
-        .btn { background: #1a1817; color: #f8f6f3; padding: 12px 32px; border-radius: 50px; font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase; border: none; cursor: pointer; margin-top: 0.5rem; }
-        .btn:hover { background: #3a3837; }
-        .required { color: #c62828; }
-        footer { text-align: center; padding: 3rem 0; font-size: 0.7rem; color: #8b7f7a; letter-spacing: 2px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, sans-serif;
+            background: linear-gradient(135deg, #f8f6f3 0%, #ede7e0 100%);
+            color: #2c2828;
+            min-height: 100vh;
+            font-weight: 300;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 3rem;
+            border-bottom: 1px solid rgba(212, 196, 176, 0.3);
+        }
+
+        nav h1 {
+            font-family: Cormorant Garamond, serif;
+            font-size: 1.8rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        nav a {
+            color: #2c2828;
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .user-badge {
+            background: #1a1817;
+            color: #f8f6f3;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 24px;
+        }
+
+        .back-link {
+            font-size: 0.75rem;
+            color: #8b7f7a;
+            text-decoration: none;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 1.5rem;
+        }
+
+        .flash {
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        .flash-error {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            color: #c62828;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 196, 176, 0.3);
+            border-radius: 12px;
+            padding: 2.5rem;
+        }
+
+        .form-card h2 {
+            font-family: Cormorant Garamond, serif;
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.65rem;
+            color: #8b7f7a;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(212, 196, 176, 0.3);
+            border-radius: 8px;
+            font-family: Inter, sans-serif;
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #d4c4b0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            text-transform: none;
+            letter-spacing: 0;
+            cursor: pointer;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            accent-color: #1a1817;
+        }
+
+        .btn {
+            background: #1a1817;
+            color: #f8f6f3;
+            padding: 12px 32px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #3a3837;
+        }
+
+        .required {
+            color: #c62828;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            font-size: 0.7rem;
+            color: #8b7f7a;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
+
 <body>
     <nav>
-        <a href="/" style="text-decoration:none;color:inherit;"><h1>aniwe</h1></a>
+        <a href="/" style="text-decoration:none;color:inherit;">
+            <h1>aniwe</h1>
+        </a>
         <div class="nav-links">
             <a href="/products">Products</a>
             <a href="/">Home</a>
@@ -43,22 +208,48 @@
     </nav>
     <div class="container">
         <a href="/products" class="back-link">&larr; Back to Products</a>
-        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="flash flash-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
+        {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in
+        messages %}<div class="flash flash-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
         <div class="form-card">
             <h2>Add New Product</h2>
             <form method="POST" action="/products/add">
                 {% if role == "ADMINISTRATOR" %}
                 <div class="form-group"><label>Retailer <span class="required">*</span></label>
-                    <select name="retailer_id" required><option value="">Select a retailer</option>{% for r in retailers %}<option value="{{ r.retailer_ID }}">{{ r.brand_name }}</option>{% endfor %}</select>
+                    <select name="retailer_id" required>
+                        <option value="">Select a retailer</option>{% for r in retailers %}<option
+                            value="{{ r.retailer_ID }}">{{ r.brand_name }}</option>{% endfor %}
+                    </select>
                 </div>
                 {% endif %}
-                <div class="form-group"><label>Product Name <span class="required">*</span></label><input type="text" name="name" placeholder="e.g. Silk Evening Blouse" required></div>
-                <div class="form-group"><label>Description</label><textarea name="description" placeholder="Describe the product..."></textarea></div>
-                <div class="form-group"><label>Price <span class="required">*</span></label><input type="number" name="price" step="0.01" min="0" placeholder="0.00" required></div>
+                <div class="form-group"><label>Product Name <span class="required">*</span></label><input type="text"
+                        name="name" placeholder="e.g. Silk Evening Blouse" required></div>
+                <div class="form-group"><label>Description</label><textarea name="description"
+                        placeholder="Describe the product..."></textarea></div>
+                <div class="form-group"><label>Price <span class="required">*</span></label><input type="number"
+                        name="price" step="0.01" min="0" placeholder="0.00" required></div>
                 <div class="form-group"><label>Category <span class="required">*</span></label>
-                    <select name="subcategory_id" required><option value="">Select a category</option>{% for sub in subcategories %}<option value="{{ sub.subcategory_ID }}">{{ sub.category }} &mdash; {{ sub.subcategory_name }}</option>{% endfor %}</select>
+                    <select name="subcategory_id" required>
+                        <option value="">Select a category</option>{% for sub in subcategories %}<option
+                            value="{{ sub.subcategory_ID }}">{{ sub.category }} &mdash; {{ sub.subcategory_name }}
+                        </option>{% endfor %}
+                    </select>
                 </div>
-                <div class="form-group"><label>Tag</label><input type="text" name="tag" placeholder="e.g. evening, casual"></div>
+                <div class="form-group"><label>Tag</label><input type="text" name="tag"
+                        placeholder="e.g. evening, casual"></div>
+
+                <!-- It's Togzhan's changes - needed for my STOCKS table -->
+                <div class="form-group">
+                    <label>Stock Quantity <span class="required">*</span></label>
+                    <input type="number" name="stock_quantity" min="0" placeholder="e.g. 100" required>
+                </div>
+                <div class="form-group">
+                    <label>Restock Threshold</label>
+                    <input type="number" name="restock_threshold" min="0" placeholder="e.g. 10" value="10">
+                </div>
+                <!-- end of STOCKS changes -->
+
+                <div class="form-group"><label>Image URL</label><input type="text" name="image_url"
+                        placeholder="https://images.unsplash.com/..."></div>
                 <div class="form-group"><label>Seasons</label>
                     <div class="checkbox-group">
                         <label><input type="checkbox" name="seasons" value="Spring"> Spring</label>
@@ -84,4 +275,5 @@
     </div>
     <footer>aniwe &mdash; AI-Powered Fashion Stylist</footer>
 </body>
+
 </html>
